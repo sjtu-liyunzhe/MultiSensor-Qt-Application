@@ -253,7 +253,7 @@ private:
 	Ui::QCplotClass ui;   //namespace
 
 private slots:
-	void on_start_clicked();
+	void on_start_clicked();		// 这些clicked槽函数由click事件自动触发，QT内部已经connect了
 	void on_stop_clicked();
 	void on_save_clicked();
 	void on_train_clicked();

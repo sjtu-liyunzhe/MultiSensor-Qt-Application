@@ -745,10 +745,10 @@ void QCplot::on_calibration_clicked()
 //~ 初始化信号通道显示控件
 void QCplot::initial()
 {
-
+	// PR
 	//ch1
-	ui.customPlot->addGraph();
-	ui.customPlot->graph(0)->setPen(QPen(Qt::black));
+	ui.customPlot->addGraph();		// 创建一个新的graph
+	ui.customPlot->graph(0)->setPen(QPen(Qt::black));		// 绘制图形线
 	for (int i=0; i<997; ++i)
 	{
 	  Data_x[i] = i;
@@ -756,13 +756,14 @@ void QCplot::initial()
 	}
 	ui.customPlot->graph(0)->setData(Data_x, Data_y);
 	ui.customPlot->graph(0)->rescaleAxes();
+	// 设置图标的交互方式：可以鼠标拖动 | 可以滚轮缩放 | 可以选择plottable(图形、曲线)及数据
 	ui.customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.customPlot->xAxis->setLabel("1/20 us");
 	ui.customPlot->yAxis->setLabel("Amplitude");
 	ui.customPlot->xAxis->setRange(0,997);
     ui.customPlot->yAxis->setRange(50,200);
-	ui.customPlot->plotLayout()->insertRow(0);
-	ui.customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.customPlot, "CH_1")); 
+	ui.customPlot->plotLayout()->insertRow(0);		// 在行索引0处插入一个单元格为空的新行
+	ui.customPlot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.customPlot, "CH_1"));		// 添加元素
 	//ui.customPlot->graph(0)->setName("ch1");
 	//ch2
 	ui.customPlot1->addGraph();
@@ -860,7 +861,8 @@ void QCplot::initial()
 
 
 
-	//replot
+	// replot
+	// 更新图形，必须调用
 	ui.customPlot->replot();
 	ui.customPlot1->replot();
 	ui.customPlot2->replot();
@@ -935,7 +937,7 @@ void QCplot::showimage1(std::vector<std::vector<double>> CurrentPackage)
 
 	for (int i= 0; i<chnum; i++ )
 	{
-		std::vector<double> Temp(CurrentPackage[i].begin()+2, CurrentPackage[i].end()-1);
+		std::vector<double> Temp(CurrentPackage[i].begin()+2, CurrentPackage[i].end()-1);		// 取A超数据，不包括包头、包尾和通道号
 		Data_y = QVector<double>::fromStdVector(Temp);
 		//for (int j= 0; j<sample_length - 3; j++)
 		//{

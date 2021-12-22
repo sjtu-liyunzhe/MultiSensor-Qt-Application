@@ -3,7 +3,7 @@
 void packet_handler(u_char *dumpfile, const struct pcap_pkthdr *header, const u_char *pkt_data);
 
 // global variables
-std::vector<std::vector<double>> OnePackage;
+std::vector<std::vector<double>> OnePackage;		// 二维数组，放8个通道的数据
 std::queue<std::vector<std::vector<double>>> US_DATA;
 std::vector<std::vector<double>> US_DATA1;
 //创建临界保护区对象
@@ -103,7 +103,7 @@ void packet_handler(u_char *dumpfile, const struct pcap_pkthdr *header, const u_
 		{
 			temp[i] = pkt_data[i];
 		}
-		double ChannelNumber = temp[1];
+		double ChannelNumber = temp[1];		// 数据包第二个是通道号
 		// combine 8 channels
 		if (ChannelNumber ==1)
 		{
@@ -239,7 +239,7 @@ bool ELOXI_US_API::opendevice()
 	printf("create capture thread \n");
 	HANDLE handle;
 	handle = (HANDLE)_beginthreadex(NULL, 0, capturethread, NULL, 0, NULL);
-	//初始化临街保护区对象
+	//初始化临界保护区对象
 	InitializeCriticalSection(&g_cs);
 	return true;
 }
@@ -253,6 +253,7 @@ ELOXI_US_API::~ELOXI_US_API()
 
 }
 
+// 为什么没有用这个？
 bool ELOXI_US_API::copydata(std::vector<std::vector<double>> &x)
 {
 	if(!US_DATA.empty())
@@ -275,10 +276,10 @@ bool ELOXI_US_API::copydata1(std::vector<std::vector<double>> &x)
 	{
 		return false;
 	}
-
+	// 检查数据包大小
 	if(US_DATA1.size() == 8)
 	{	
-		if (US_DATA1[7][1] = 8)
+		if (US_DATA1[7][1] = 8)		// 检查数据包格式是否正确
 		{
 			EnterCriticalSection(&g_cs);
 			x = US_DATA1;
