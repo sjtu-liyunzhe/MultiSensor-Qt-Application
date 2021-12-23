@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'qcplot.ui'
+** Form generated from reading UI file 'qcplot386496.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.1.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_QCPLOT_H
-#define UI_QCPLOT_H
+#ifndef QCPLOT386496_H
+#define QCPLOT386496_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -15,9 +15,7 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
-#include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
-#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
@@ -25,7 +23,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
@@ -166,61 +163,6 @@ public:
     QPushButton *capture;
     QPushButton *calibration;
     QCheckBox *save;
-    QWidget *SetSerialPort;
-    QGroupBox *groupBox;
-    QWidget *layoutWidget;
-    QVBoxLayout *verticalLayout_3;
-    QHBoxLayout *horizontalLayout_10;
-    QLabel *serialPort_label;
-    QComboBox *serialPort_comboBox;
-    QHBoxLayout *horizontalLayout_11;
-    QLabel *baud_label;
-    QComboBox *baud_comboBox;
-    QHBoxLayout *horizontalLayout_15;
-    QLabel *stopBit_label;
-    QComboBox *stopBit_comboBox;
-    QHBoxLayout *horizontalLayout_12;
-    QLabel *dataBits_label;
-    QComboBox *dataBits_comboBox;
-    QHBoxLayout *horizontalLayout_14;
-    QLabel *verify_label;
-    QComboBox *verify_comboBox;
-    QHBoxLayout *horizontalLayout_16;
-    QPushButton *start_serialPort_button;
-    QPushButton *stop_serialPort_button;
-    QCheckBox *hex_checkBox;
-    QPushButton *clear_button;
-    QGroupBox *groupBox_2;
-    QVBoxLayout *verticalLayout_4;
-    QHBoxLayout *horizontalLayout_17;
-    QLineEdit *lineEdit;
-    QPushButton *serialSend_button;
-    QPlainTextEdit *plainTextEdit;
-    QWidget *MutiData;
-    QFrame *line;
-    QFrame *line_2;
-    QWidget *layoutWidget1;
-    QHBoxLayout *horizontalLayout_18;
-    QVBoxLayout *verticalLayout_5;
-    QCustomPlot *Amode_1_plot;
-    QCustomPlot *Amode_2_plot;
-    QCustomPlot *Amode_3_plot;
-    QCustomPlot *Amode_4_plot;
-    QVBoxLayout *verticalLayout_6;
-    QCustomPlot *EMG_1_plot;
-    QCustomPlot *EMG_3_plot;
-    QCustomPlot *EMG_2_plot;
-    QCustomPlot *EMG_4_plot;
-    QVBoxLayout *verticalLayout_7;
-    QCustomPlot *IMU_1_plot;
-    QCustomPlot *IMU_2_plot;
-    QCustomPlot *IMU_3_plot;
-    QCustomPlot *IMU_4_plot;
-    QWidget *layoutWidget2;
-    QHBoxLayout *horizontalLayout_8;
-    QLabel *Amode_label;
-    QLabel *EMG_label;
-    QLabel *IMU_label;
     QMenuBar *menuBar;
     QMenu *menuSetting;
     QToolBar *mainToolBar;
@@ -230,7 +172,7 @@ public:
     {
         if (QCplotClass->objectName().isEmpty())
             QCplotClass->setObjectName(QStringLiteral("QCplotClass"));
-        QCplotClass->resize(1130, 928);
+        QCplotClass->resize(1124, 698);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -1027,288 +969,13 @@ public:
         horizontalLayout_3->addLayout(wholeLayout);
 
         tabWidget->addTab(Amode, QString());
-        SetSerialPort = new QWidget();
-        SetSerialPort->setObjectName(QStringLiteral("SetSerialPort"));
-        groupBox = new QGroupBox(SetSerialPort);
-        groupBox->setObjectName(QStringLiteral("groupBox"));
-        groupBox->setGeometry(QRect(780, 10, 321, 811));
-        layoutWidget = new QWidget(groupBox);
-        layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
-        layoutWidget->setGeometry(QRect(10, 20, 221, 301));
-        verticalLayout_3 = new QVBoxLayout(layoutWidget);
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        verticalLayout_3->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_10 = new QHBoxLayout();
-        horizontalLayout_10->setSpacing(6);
-        horizontalLayout_10->setObjectName(QStringLiteral("horizontalLayout_10"));
-        serialPort_label = new QLabel(layoutWidget);
-        serialPort_label->setObjectName(QStringLiteral("serialPort_label"));
-
-        horizontalLayout_10->addWidget(serialPort_label);
-
-        serialPort_comboBox = new QComboBox(layoutWidget);
-        serialPort_comboBox->setObjectName(QStringLiteral("serialPort_comboBox"));
-        serialPort_comboBox->setEnabled(true);
-
-        horizontalLayout_10->addWidget(serialPort_comboBox);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_10);
-
-        horizontalLayout_11 = new QHBoxLayout();
-        horizontalLayout_11->setSpacing(6);
-        horizontalLayout_11->setObjectName(QStringLiteral("horizontalLayout_11"));
-        baud_label = new QLabel(layoutWidget);
-        baud_label->setObjectName(QStringLiteral("baud_label"));
-
-        horizontalLayout_11->addWidget(baud_label);
-
-        baud_comboBox = new QComboBox(layoutWidget);
-        baud_comboBox->setObjectName(QStringLiteral("baud_comboBox"));
-
-        horizontalLayout_11->addWidget(baud_comboBox);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_11);
-
-        horizontalLayout_15 = new QHBoxLayout();
-        horizontalLayout_15->setSpacing(6);
-        horizontalLayout_15->setObjectName(QStringLiteral("horizontalLayout_15"));
-        stopBit_label = new QLabel(layoutWidget);
-        stopBit_label->setObjectName(QStringLiteral("stopBit_label"));
-
-        horizontalLayout_15->addWidget(stopBit_label);
-
-        stopBit_comboBox = new QComboBox(layoutWidget);
-        stopBit_comboBox->setObjectName(QStringLiteral("stopBit_comboBox"));
-
-        horizontalLayout_15->addWidget(stopBit_comboBox);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_15);
-
-        horizontalLayout_12 = new QHBoxLayout();
-        horizontalLayout_12->setSpacing(6);
-        horizontalLayout_12->setObjectName(QStringLiteral("horizontalLayout_12"));
-        dataBits_label = new QLabel(layoutWidget);
-        dataBits_label->setObjectName(QStringLiteral("dataBits_label"));
-
-        horizontalLayout_12->addWidget(dataBits_label);
-
-        dataBits_comboBox = new QComboBox(layoutWidget);
-        dataBits_comboBox->setObjectName(QStringLiteral("dataBits_comboBox"));
-
-        horizontalLayout_12->addWidget(dataBits_comboBox);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_12);
-
-        horizontalLayout_14 = new QHBoxLayout();
-        horizontalLayout_14->setSpacing(6);
-        horizontalLayout_14->setObjectName(QStringLiteral("horizontalLayout_14"));
-        verify_label = new QLabel(layoutWidget);
-        verify_label->setObjectName(QStringLiteral("verify_label"));
-
-        horizontalLayout_14->addWidget(verify_label);
-
-        verify_comboBox = new QComboBox(layoutWidget);
-        verify_comboBox->setObjectName(QStringLiteral("verify_comboBox"));
-
-        horizontalLayout_14->addWidget(verify_comboBox);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_14);
-
-        horizontalLayout_16 = new QHBoxLayout();
-        horizontalLayout_16->setSpacing(6);
-        horizontalLayout_16->setObjectName(QStringLiteral("horizontalLayout_16"));
-        start_serialPort_button = new QPushButton(layoutWidget);
-        start_serialPort_button->setObjectName(QStringLiteral("start_serialPort_button"));
-
-        horizontalLayout_16->addWidget(start_serialPort_button);
-
-        stop_serialPort_button = new QPushButton(layoutWidget);
-        stop_serialPort_button->setObjectName(QStringLiteral("stop_serialPort_button"));
-
-        horizontalLayout_16->addWidget(stop_serialPort_button);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_16);
-
-        hex_checkBox = new QCheckBox(layoutWidget);
-        hex_checkBox->setObjectName(QStringLiteral("hex_checkBox"));
-
-        verticalLayout_3->addWidget(hex_checkBox);
-
-        clear_button = new QPushButton(layoutWidget);
-        clear_button->setObjectName(QStringLiteral("clear_button"));
-
-        verticalLayout_3->addWidget(clear_button);
-
-        groupBox_2 = new QGroupBox(SetSerialPort);
-        groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
-        groupBox_2->setGeometry(QRect(0, 13, 751, 811));
-        verticalLayout_4 = new QVBoxLayout(groupBox_2);
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        horizontalLayout_17 = new QHBoxLayout();
-        horizontalLayout_17->setSpacing(6);
-        horizontalLayout_17->setObjectName(QStringLiteral("horizontalLayout_17"));
-        lineEdit = new QLineEdit(groupBox_2);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
-
-        horizontalLayout_17->addWidget(lineEdit);
-
-        serialSend_button = new QPushButton(groupBox_2);
-        serialSend_button->setObjectName(QStringLiteral("serialSend_button"));
-
-        horizontalLayout_17->addWidget(serialSend_button);
-
-
-        verticalLayout_4->addLayout(horizontalLayout_17);
-
-        plainTextEdit = new QPlainTextEdit(groupBox_2);
-        plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
-
-        verticalLayout_4->addWidget(plainTextEdit);
-
-        tabWidget->addTab(SetSerialPort, QString());
-        MutiData = new QWidget();
-        MutiData->setObjectName(QStringLiteral("MutiData"));
-        line = new QFrame(MutiData);
-        line->setObjectName(QStringLiteral("line"));
-        line->setGeometry(QRect(366, 0, 3, 825));
-        line->setFrameShape(QFrame::VLine);
-        line->setFrameShadow(QFrame::Sunken);
-        line_2 = new QFrame(MutiData);
-        line_2->setObjectName(QStringLiteral("line_2"));
-        line_2->setGeometry(QRect(734, 0, 3, 825));
-        line_2->setFrameShape(QFrame::VLine);
-        line_2->setFrameShadow(QFrame::Sunken);
-        layoutWidget1 = new QWidget(MutiData);
-        layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(0, 40, 1101, 781));
-        horizontalLayout_18 = new QHBoxLayout(layoutWidget1);
-        horizontalLayout_18->setSpacing(6);
-        horizontalLayout_18->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_18->setObjectName(QStringLiteral("horizontalLayout_18"));
-        horizontalLayout_18->setContentsMargins(0, 0, 0, 0);
-        verticalLayout_5 = new QVBoxLayout();
-        verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        Amode_1_plot = new QCustomPlot(layoutWidget1);
-        Amode_1_plot->setObjectName(QStringLiteral("Amode_1_plot"));
-
-        verticalLayout_5->addWidget(Amode_1_plot);
-
-        Amode_2_plot = new QCustomPlot(layoutWidget1);
-        Amode_2_plot->setObjectName(QStringLiteral("Amode_2_plot"));
-
-        verticalLayout_5->addWidget(Amode_2_plot);
-
-        Amode_3_plot = new QCustomPlot(layoutWidget1);
-        Amode_3_plot->setObjectName(QStringLiteral("Amode_3_plot"));
-
-        verticalLayout_5->addWidget(Amode_3_plot);
-
-        Amode_4_plot = new QCustomPlot(layoutWidget1);
-        Amode_4_plot->setObjectName(QStringLiteral("Amode_4_plot"));
-
-        verticalLayout_5->addWidget(Amode_4_plot);
-
-
-        horizontalLayout_18->addLayout(verticalLayout_5);
-
-        verticalLayout_6 = new QVBoxLayout();
-        verticalLayout_6->setSpacing(6);
-        verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
-        EMG_1_plot = new QCustomPlot(layoutWidget1);
-        EMG_1_plot->setObjectName(QStringLiteral("EMG_1_plot"));
-
-        verticalLayout_6->addWidget(EMG_1_plot);
-
-        EMG_3_plot = new QCustomPlot(layoutWidget1);
-        EMG_3_plot->setObjectName(QStringLiteral("EMG_3_plot"));
-
-        verticalLayout_6->addWidget(EMG_3_plot);
-
-        EMG_2_plot = new QCustomPlot(layoutWidget1);
-        EMG_2_plot->setObjectName(QStringLiteral("EMG_2_plot"));
-
-        verticalLayout_6->addWidget(EMG_2_plot);
-
-        EMG_4_plot = new QCustomPlot(layoutWidget1);
-        EMG_4_plot->setObjectName(QStringLiteral("EMG_4_plot"));
-
-        verticalLayout_6->addWidget(EMG_4_plot);
-
-
-        horizontalLayout_18->addLayout(verticalLayout_6);
-
-        verticalLayout_7 = new QVBoxLayout();
-        verticalLayout_7->setSpacing(6);
-        verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
-        IMU_1_plot = new QCustomPlot(layoutWidget1);
-        IMU_1_plot->setObjectName(QStringLiteral("IMU_1_plot"));
-
-        verticalLayout_7->addWidget(IMU_1_plot);
-
-        IMU_2_plot = new QCustomPlot(layoutWidget1);
-        IMU_2_plot->setObjectName(QStringLiteral("IMU_2_plot"));
-
-        verticalLayout_7->addWidget(IMU_2_plot);
-
-        IMU_3_plot = new QCustomPlot(layoutWidget1);
-        IMU_3_plot->setObjectName(QStringLiteral("IMU_3_plot"));
-
-        verticalLayout_7->addWidget(IMU_3_plot);
-
-        IMU_4_plot = new QCustomPlot(layoutWidget1);
-        IMU_4_plot->setObjectName(QStringLiteral("IMU_4_plot"));
-
-        verticalLayout_7->addWidget(IMU_4_plot);
-
-
-        horizontalLayout_18->addLayout(verticalLayout_7);
-
-        layoutWidget2 = new QWidget(MutiData);
-        layoutWidget2->setObjectName(QStringLiteral("layoutWidget2"));
-        layoutWidget2->setGeometry(QRect(10, 10, 1091, 22));
-        horizontalLayout_8 = new QHBoxLayout(layoutWidget2);
-        horizontalLayout_8->setSpacing(6);
-        horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
-        horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
-        Amode_label = new QLabel(layoutWidget2);
-        Amode_label->setObjectName(QStringLiteral("Amode_label"));
-        Amode_label->setLayoutDirection(Qt::LeftToRight);
-        Amode_label->setAlignment(Qt::AlignCenter);
-
-        horizontalLayout_8->addWidget(Amode_label);
-
-        EMG_label = new QLabel(layoutWidget2);
-        EMG_label->setObjectName(QStringLiteral("EMG_label"));
-        EMG_label->setAlignment(Qt::AlignCenter);
-
-        horizontalLayout_8->addWidget(EMG_label);
-
-        IMU_label = new QLabel(layoutWidget2);
-        IMU_label->setObjectName(QStringLiteral("IMU_label"));
-        IMU_label->setAlignment(Qt::AlignCenter);
-
-        horizontalLayout_8->addWidget(IMU_label);
-
-        tabWidget->addTab(MutiData, QString());
 
         horizontalLayout_2->addWidget(tabWidget);
 
         QCplotClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(QCplotClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1130, 26));
+        menuBar->setGeometry(QRect(0, 0, 1124, 23));
         menuSetting = new QMenu(menuBar);
         menuSetting->setObjectName(QStringLiteral("menuSetting"));
         menuSetting->setStyleSheet(QStringLiteral("font: 12pt \"Times New Roman\";"));
@@ -1325,7 +992,7 @@ public:
 
         retranslateUi(QCplotClass);
 
-        tabWidget->setCurrentIndex(5);
+        tabWidget->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(QCplotClass);
@@ -1402,71 +1069,6 @@ public:
         calibration->setText(QApplication::translate("QCplotClass", "Cali", 0));
         save->setText(QApplication::translate("QCplotClass", "Save", 0));
         tabWidget->setTabText(tabWidget->indexOf(Amode), QApplication::translate("QCplotClass", "PR", 0));
-        groupBox->setTitle(QString());
-        serialPort_label->setText(QApplication::translate("QCplotClass", "\344\270\262\345\217\243\345\217\267", 0));
-        serialPort_comboBox->clear();
-        serialPort_comboBox->insertItems(0, QStringList()
-         << QApplication::translate("QCplotClass", "COM1", 0)
-         << QApplication::translate("QCplotClass", "COM2", 0)
-         << QApplication::translate("QCplotClass", "COM3", 0)
-         << QApplication::translate("QCplotClass", "COM4", 0)
-         << QApplication::translate("QCplotClass", "COM5", 0)
-         << QApplication::translate("QCplotClass", "COM6", 0)
-         << QApplication::translate("QCplotClass", "COM7", 0)
-         << QApplication::translate("QCplotClass", "COM8", 0)
-         << QApplication::translate("QCplotClass", "COM9", 0)
-         << QApplication::translate("QCplotClass", "COM10", 0)
-         << QApplication::translate("QCplotClass", "COM11", 0)
-         << QApplication::translate("QCplotClass", "COM12", 0)
-        );
-        baud_label->setText(QApplication::translate("QCplotClass", "\346\263\242\347\211\271\347\216\207", 0));
-        baud_comboBox->clear();
-        baud_comboBox->insertItems(0, QStringList()
-         << QApplication::translate("QCplotClass", "1200", 0)
-         << QApplication::translate("QCplotClass", "2400", 0)
-         << QApplication::translate("QCplotClass", "4800", 0)
-         << QApplication::translate("QCplotClass", "9600", 0)
-         << QApplication::translate("QCplotClass", "15200", 0)
-         << QApplication::translate("QCplotClass", "25600", 0)
-         << QApplication::translate("QCplotClass", "115200", 0)
-         << QApplication::translate("QCplotClass", "250000", 0)
-         << QApplication::translate("QCplotClass", "256000", 0)
-         << QApplication::translate("QCplotClass", "500000", 0)
-         << QApplication::translate("QCplotClass", "921600", 0)
-        );
-        stopBit_label->setText(QApplication::translate("QCplotClass", "\345\201\234\346\255\242\344\275\215", 0));
-        stopBit_comboBox->clear();
-        stopBit_comboBox->insertItems(0, QStringList()
-         << QApplication::translate("QCplotClass", "1", 0)
-         << QApplication::translate("QCplotClass", "1.5", 0)
-         << QApplication::translate("QCplotClass", "2", 0)
-        );
-        dataBits_label->setText(QApplication::translate("QCplotClass", "\346\225\260\346\215\256\344\275\215", 0));
-        dataBits_comboBox->clear();
-        dataBits_comboBox->insertItems(0, QStringList()
-         << QApplication::translate("QCplotClass", "8", 0)
-         << QApplication::translate("QCplotClass", "7", 0)
-         << QApplication::translate("QCplotClass", "6", 0)
-         << QApplication::translate("QCplotClass", "5", 0)
-        );
-        verify_label->setText(QApplication::translate("QCplotClass", "\346\240\241\351\252\214\344\275\215", 0));
-        verify_comboBox->clear();
-        verify_comboBox->insertItems(0, QStringList()
-         << QApplication::translate("QCplotClass", "None", 0)
-         << QApplication::translate("QCplotClass", "Odd", 0)
-         << QApplication::translate("QCplotClass", "Even", 0)
-        );
-        start_serialPort_button->setText(QApplication::translate("QCplotClass", "\346\211\223\345\274\200\344\270\262\345\217\243", 0));
-        stop_serialPort_button->setText(QApplication::translate("QCplotClass", "\345\205\263\351\227\255\344\270\262\345\217\243", 0));
-        hex_checkBox->setText(QApplication::translate("QCplotClass", "HEX", 0));
-        clear_button->setText(QApplication::translate("QCplotClass", "\346\270\205\351\231\244\346\216\245\346\224\266", 0));
-        groupBox_2->setTitle(QString());
-        serialSend_button->setText(QApplication::translate("QCplotClass", "\345\217\221\351\200\201", 0));
-        tabWidget->setTabText(tabWidget->indexOf(SetSerialPort), QApplication::translate("QCplotClass", "SerialPort", 0));
-        Amode_label->setText(QApplication::translate("QCplotClass", "A\350\266\205\344\277\241\345\217\267", 0));
-        EMG_label->setText(QApplication::translate("QCplotClass", "EMG\344\277\241\345\217\267", 0));
-        IMU_label->setText(QApplication::translate("QCplotClass", "IMU\344\277\241\345\217\267", 0));
-        tabWidget->setTabText(tabWidget->indexOf(MutiData), QApplication::translate("QCplotClass", "Data", 0));
         menuSetting->setTitle(QApplication::translate("QCplotClass", "Setting", 0));
     } // retranslateUi
 
@@ -1478,4 +1080,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // UI_QCPLOT_H
+#endif // QCPLOT386496_H

@@ -62,7 +62,7 @@
 
 class QCplot : public QMainWindow //,public Ui_QCplotClass
 {
-	Q_OBJECT
+	Q_OBJECT		// moc
 
 private:
 	char fileName[8][100];

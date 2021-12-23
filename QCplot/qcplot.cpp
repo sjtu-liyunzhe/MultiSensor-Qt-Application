@@ -564,7 +564,7 @@ QCplot::~QCplot()
 void QCplot::initialSlots()
 {	
 	//调整为阻塞
-	QObject::connect(myPlayer,	SIGNAL(showImage()), this, SLOT(updatePlayerUI()),Qt::BlockingQueuedConnection);
+	QObject::connect(myPlayer,	SIGNAL(showImage()), this, SLOT(updatePlayerUI()),Qt::BlockingQueuedConnection);		// showImage是MyPlayer中的信号
 	//QObject::connect(myPlayer,	SIGNAL(showImage(QImage)), this, SLOT(updatePlayerUI(QImage)),Qt::BlockingQueuedConnection);
 	QObject::connect(myPlayer,	SIGNAL(trainImage()), this, SLOT(getTrainFeatureC()),Qt::BlockingQueuedConnection);
 	//QObject::connect(myPlayer,	SIGNAL(trainImage(QImage)), this, SLOT(getTrainFeatureC(QImage)),Qt::BlockingQueuedConnection);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1124</width>
-    <height>698</height>
+    <width>1130</width>
+    <height>928</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -54,7 +54,7 @@
          <widget class="QWidget" name="widget" native="true">
           <layout class="QVBoxLayout" name="wholeLayout_3" stretch="3,3,1">
            <item>
-            <widget class="QWidget" name="" native="true">
+            <widget class="QWidget" name="widget" native="true">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
@@ -430,7 +430,7 @@ background-color: rgb(226, 226, 226);</string>
            </layout>
           </item>
           <item>
-           <widget class="QWidget" name="" native="true">
+           <widget class="QWidget" name="widget" native="true">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -1437,6 +1437,479 @@ background-color: rgb(226, 226, 226);</string>
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="SetSerialPort">
+       <attribute name="title">
+        <string>SerialPort</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="geometry">
+         <rect>
+          <x>780</x>
+          <y>10</y>
+          <width>321</width>
+          <height>811</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>221</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="serialPort_label">
+              <property name="text">
+               <string>串口号</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="serialPort_comboBox">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <item>
+               <property name="text">
+                <string>COM1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM4</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM6</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM7</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM8</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM9</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM10</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM11</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>COM12</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QLabel" name="baud_label">
+              <property name="text">
+               <string>波特率</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="baud_comboBox">
+              <item>
+               <property name="text">
+                <string>1200</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>2400</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>4800</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>9600</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>15200</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>25600</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>115200</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>250000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>256000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>500000</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>921600</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_15">
+            <item>
+             <widget class="QLabel" name="stopBit_label">
+              <property name="text">
+               <string>停止位</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="stopBit_comboBox">
+              <item>
+               <property name="text">
+                <string>1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1.5</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>2</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QLabel" name="dataBits_label">
+              <property name="text">
+               <string>数据位</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="dataBits_comboBox">
+              <item>
+               <property name="text">
+                <string>8</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>7</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>6</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>5</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_14">
+            <item>
+             <widget class="QLabel" name="verify_label">
+              <property name="text">
+               <string>校验位</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="verify_comboBox">
+              <item>
+               <property name="text">
+                <string>None</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Odd</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Even</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_16">
+            <item>
+             <widget class="QPushButton" name="start_serialPort_button">
+              <property name="text">
+               <string>打开串口</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="stop_serialPort_button">
+              <property name="text">
+               <string>关闭串口</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="hex_checkBox">
+            <property name="text">
+             <string>HEX</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clear_button">
+            <property name="text">
+             <string>清除接收</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>13</y>
+          <width>751</width>
+          <height>811</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_17">
+           <item>
+            <widget class="QLineEdit" name="lineEdit"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="serialSend_button">
+             <property name="text">
+              <string>发送</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPlainTextEdit" name="plainTextEdit"/>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="MutiData">
+       <attribute name="title">
+        <string>Data</string>
+       </attribute>
+       <widget class="Line" name="line">
+        <property name="geometry">
+         <rect>
+          <x>366</x>
+          <y>0</y>
+          <width>3</width>
+          <height>825</height>
+         </rect>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+       <widget class="Line" name="line_2">
+        <property name="geometry">
+         <rect>
+          <x>734</x>
+          <y>0</y>
+          <width>3</width>
+          <height>825</height>
+         </rect>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>1101</width>
+          <height>781</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_18">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QCustomPlot" name="Amode_1_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="Amode_2_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="Amode_3_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="Amode_4_plot" native="true"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QCustomPlot" name="EMG_1_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="EMG_3_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="EMG_2_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="EMG_4_plot" native="true"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QCustomPlot" name="IMU_1_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="IMU_2_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="IMU_3_plot" native="true"/>
+           </item>
+           <item>
+            <widget class="QCustomPlot" name="IMU_4_plot" native="true"/>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>1091</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="Amode_label">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>A超信号</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="EMG_label">
+           <property name="text">
+            <string>EMG信号</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="IMU_label">
+           <property name="text">
+            <string>IMU信号</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1446,8 +1919,8 @@ background-color: rgb(226, 226, 226);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1124</width>
-     <height>23</height>
+     <width>1130</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSetting">
