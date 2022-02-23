@@ -101,6 +101,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_Delsys_SDK.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="IMUProcesser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_IMUProcesser.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_IMUProcesser.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="qcplot.h">
@@ -123,6 +132,9 @@
     </CustomBuild>
     <CustomBuild Include="Delsys_SDK.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="IMUProcesser.h">
+      <Filter>Source Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

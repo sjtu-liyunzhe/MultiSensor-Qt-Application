@@ -31,6 +31,14 @@
 #include <WS2tcpip.h>
 //~ MATLAB
 #include "engine.h" //~ 该文件包含了matlab计算引擎API函数的说明和所需数据结构的定义
+// 串口
+#include <QSerialPort>
+#include <hash_map>
+#include <QSerialPortInfo>
+#include <QList>
+#include <QHash>
+#include <QDebug>
+#include "IMUProcesser.h"
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -203,6 +211,65 @@ private:
 	char savedata_xsens_all[100];
 	char save_xsens[100];
 	char save_xsens_all[100];
+
+	// 串口
+	QSerialPort* serialPort;
+	QSerialPortInfo* serialPortInfo;
+	QList<QSerialPortInfo> serialList;
+	//std::map<int, QSerialPort::BaudRate> baudMap;
+	std::hash_map<int, QSerialPort::BaudRate> baudMap;
+	std::hash_map<std::string, QSerialPort::Parity> parityMap;
+	std::hash_map<int, QSerialPort::DataBits> dataBitsMap;
+	std::hash_map<float, QSerialPort::StopBits> stopBitsMap;
+	QHash<int, QSerialPort::BaudRate> baudHash;
+	std::vector<std::vector<std::vector<float>>> IMU_Data;		// 4 * 3* 1000 4个IMU的三个欧拉角
+	bool isSerialPortOpen;
+	bool isReceiveHex;
+	void serialPortInit();
+	void getExistingSerialPort();
+	void setPortName();
+	bool setBaudRate();
+	bool setDataBits();
+	bool setParity();
+	bool setStopBits();
+	QByteArray HexStrToByteArray(QString str);
+	char ConvertHexChar(char ch);
+	QString ByteArrayToHexStr(QByteArray data);
+	
+
+	IMUProcesser* IMU_Thread;
+
+	// 串口解包
+	QVector <double> IMU_x, IMU_y;
+	void showIMUImage();
+	void showIMUImage_2();
+	void showIMUImage_3();
+	void showIMUImage_4();
+	void onReadyProcessing();
+	void dataUnpackage();
+	int IMU_Datalength;
+	QByteArray IMUSerialPortBuffer;
+	// 4 * 3 * 1000 4通道IMU的三个欧拉角数据
+	// 通道号 * roll, pitch, yaw * 1000
+	std::vector<std::vector<std::vector<double>>> IMUDataPackage;
+	std::vector<double> IMU_0_Roll;
+	std::vector<double> IMU_0_Pitch;
+	std::vector<double> IMU_0_Yaw;
+
+	std::vector<double> IMU_1_Roll;
+	std::vector<double> IMU_1_Pitch;
+	std::vector<double> IMU_1_Yaw;
+
+	std::vector<double> IMU_2_Roll;
+	std::vector<double> IMU_2_Pitch;
+	std::vector<double> IMU_2_Yaw;
+
+	std::vector<double> IMU_3_Roll;
+	std::vector<double> IMU_3_Pitch;
+	std::vector<double> IMU_3_Yaw;
+	//std::vector<float> IMUDataPackage[4][3];
+
+	int key_IMU_1, key_IMU_2, key_IMU_3, key_IMU_4;
 	
 public:
 	void initial();
@@ -251,6 +318,10 @@ public:
 private:
 	parametersSettings currentParametersSettings;
 	Ui::QCplotClass ui;   //namespace
+
+signals:
+	void serialPortConnected();
+	void serialPortClosed();
 
 private slots:
 	void on_start_clicked();		// 这些clicked槽函数由click事件自动触发，QT内部已经connect了
@@ -305,6 +376,15 @@ private slots:
 	//~ delsys相关
 	void on_Delsys_On_clicked();
 
+	// 串口通信相关
+	void on_start_serialPort_button_clicked();
+	void on_stop_serialPort_button_clicked();
+	void readData();
+	void receiveChangeState(bool checkFlag);
+	void dispalySerialData();
+	void updateIMUImage();
+
+	
 
 };
 

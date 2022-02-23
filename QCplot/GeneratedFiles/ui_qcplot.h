@@ -25,7 +25,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
@@ -33,6 +32,7 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QVBoxLayout>
@@ -191,11 +191,11 @@ public:
     QCheckBox *hex_checkBox;
     QPushButton *clear_button;
     QGroupBox *groupBox_2;
-    QVBoxLayout *verticalLayout_4;
+    QTextBrowser *receiveWindow;
+    QWidget *widget4;
     QHBoxLayout *horizontalLayout_17;
-    QLineEdit *lineEdit;
+    QLineEdit *sendWindow;
     QPushButton *serialSend_button;
-    QPlainTextEdit *plainTextEdit;
     QWidget *MutiData;
     QFrame *line;
     QFrame *line_2;
@@ -1150,30 +1150,26 @@ public:
         groupBox_2 = new QGroupBox(SetSerialPort);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(0, 13, 751, 811));
-        verticalLayout_4 = new QVBoxLayout(groupBox_2);
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        horizontalLayout_17 = new QHBoxLayout();
+        receiveWindow = new QTextBrowser(groupBox_2);
+        receiveWindow->setObjectName(QStringLiteral("receiveWindow"));
+        receiveWindow->setGeometry(QRect(10, 61, 731, 741));
+        widget4 = new QWidget(groupBox_2);
+        widget4->setObjectName(QStringLiteral("widget4"));
+        widget4->setGeometry(QRect(13, 13, 731, 31));
+        horizontalLayout_17 = new QHBoxLayout(widget4);
         horizontalLayout_17->setSpacing(6);
+        horizontalLayout_17->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_17->setObjectName(QStringLiteral("horizontalLayout_17"));
-        lineEdit = new QLineEdit(groupBox_2);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        horizontalLayout_17->setContentsMargins(0, 0, 0, 0);
+        sendWindow = new QLineEdit(widget4);
+        sendWindow->setObjectName(QStringLiteral("sendWindow"));
 
-        horizontalLayout_17->addWidget(lineEdit);
+        horizontalLayout_17->addWidget(sendWindow);
 
-        serialSend_button = new QPushButton(groupBox_2);
+        serialSend_button = new QPushButton(widget4);
         serialSend_button->setObjectName(QStringLiteral("serialSend_button"));
 
         horizontalLayout_17->addWidget(serialSend_button);
-
-
-        verticalLayout_4->addLayout(horizontalLayout_17);
-
-        plainTextEdit = new QPlainTextEdit(groupBox_2);
-        plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
-
-        verticalLayout_4->addWidget(plainTextEdit);
 
         tabWidget->addTab(SetSerialPort, QString());
         MutiData = new QWidget();
@@ -1325,7 +1321,7 @@ public:
 
         retranslateUi(QCplotClass);
 
-        tabWidget->setCurrentIndex(5);
+        tabWidget->setCurrentIndex(4);
 
 
         QMetaObject::connectSlotsByName(QCplotClass);
@@ -1426,13 +1422,10 @@ public:
          << QApplication::translate("QCplotClass", "2400", 0)
          << QApplication::translate("QCplotClass", "4800", 0)
          << QApplication::translate("QCplotClass", "9600", 0)
-         << QApplication::translate("QCplotClass", "15200", 0)
-         << QApplication::translate("QCplotClass", "25600", 0)
+         << QApplication::translate("QCplotClass", "19200", 0)
+         << QApplication::translate("QCplotClass", "38400", 0)
+         << QApplication::translate("QCplotClass", "57600", 0)
          << QApplication::translate("QCplotClass", "115200", 0)
-         << QApplication::translate("QCplotClass", "250000", 0)
-         << QApplication::translate("QCplotClass", "256000", 0)
-         << QApplication::translate("QCplotClass", "500000", 0)
-         << QApplication::translate("QCplotClass", "921600", 0)
         );
         stopBit_label->setText(QApplication::translate("QCplotClass", "\345\201\234\346\255\242\344\275\215", 0));
         stopBit_comboBox->clear();

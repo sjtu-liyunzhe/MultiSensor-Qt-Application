@@ -412,6 +412,8 @@ QCplot::QCplot(QWidget *parent)
 	ui.setupUi(this);
 	Data_x.resize(997);
 	Data_y.resize(997);
+	IMU_x.resize(100);
+	IMU_y.resize(100);
 	//for calibration
 	capture = false;
 	calibration = false;
@@ -552,6 +554,13 @@ QCplot::QCplot(QWidget *parent)
 
 
 	p->opendevice();
+
+	// 串口
+	serialPort = new QSerialPort();
+	serialPortInfo = new QSerialPortInfo();
+	serialPortInit();
+	IMU_Thread = new IMUProcesser(serialPort);
+	IMU_Datalength = 22;
 } 
 
 
@@ -859,8 +868,135 @@ void QCplot::initial()
 	ui.customPlot_mode2->plotLayout()->addElement(0, 0, new QCPTextElement(ui.customPlot_mode2, "CH_1"));
 	//ui.customPlot_mode2->graph(0)->setName("ch4");
 
+	// 串口
+	for (int i = 0; i < IMU_x.size(); ++i)
+	{
+		IMU_x[i] = i;
+		IMU_y[i] = 0;
+	}
+	QFont font;
+	font.setPixelSize(12);
+	font.setStyleStrategy(QFont::NoAntialias);
 
+	ui.IMU_1_plot->legend->setFont(font);
+	ui.IMU_1_plot->legend->setVisible(true);
+	ui.IMU_1_plot->legend->setRowSpacing(-5);
+	ui.IMU_1_plot->legend->setIconSize(12, 15);
+	ui.IMU_1_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.IMU_1_plot->addGraph();
+	ui.IMU_1_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.IMU_1_plot->graph(0)->setData(IMU_x, IMU_y);
+	ui.IMU_1_plot->graph(0)->rescaleAxes();
+	ui.IMU_1_plot->graph(0)->setName("Roll");
+	ui.IMU_1_plot->addGraph();
+	ui.IMU_1_plot->graph(1)->setPen(QPen(Qt::blue));
+	ui.IMU_1_plot->graph(1)->setData(IMU_x, IMU_y);
+	ui.IMU_1_plot->graph(1)->rescaleAxes();
+	ui.IMU_1_plot->graph(1)->setName("Pitch");
+	ui.IMU_1_plot->addGraph();
+	ui.IMU_1_plot->graph(2)->setPen(QPen(Qt::red));
+	ui.IMU_1_plot->graph(2)->setData(IMU_x, IMU_y);
+	ui.IMU_1_plot->graph(2)->rescaleAxes();
+	ui.IMU_1_plot->graph(2)->setName("Yaw");
 
+	ui.IMU_1_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	//ui.IMU_1_plot->xAxis->setLabel("1/20 us");
+	ui.IMU_1_plot->yAxis->setLabel("Amplitude");
+	ui.IMU_1_plot->xAxis->setRange(0, 1000);
+	ui.IMU_1_plot->yAxis->setRange(0, 800);
+	ui.IMU_1_plot->yAxis->setTickLabels(false);
+	ui.IMU_1_plot->plotLayout()->insertRow(0);
+	ui.IMU_1_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_1_plot, "CH_1"));
+
+	ui.IMU_2_plot->legend->setFont(font);
+	ui.IMU_2_plot->legend->setVisible(true);
+	ui.IMU_2_plot->legend->setRowSpacing(-5);
+	ui.IMU_2_plot->legend->setIconSize(12, 15);
+	ui.IMU_2_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.IMU_2_plot->addGraph();
+	ui.IMU_2_plot->graph(0)->setPen(QPen(Qt::black));
+	//ui.IMU_2_plot->graph(0)->setData(IMU_x, IMU_y);
+	ui.IMU_2_plot->graph(0)->rescaleAxes();
+	ui.IMU_2_plot->graph(0)->setName("Roll");
+	ui.IMU_2_plot->addGraph();
+	ui.IMU_2_plot->graph(1)->setPen(QPen(Qt::blue));
+	//ui.IMU_2_plot->graph(1)->setData(IMU_x, IMU_y);
+	ui.IMU_2_plot->graph(1)->rescaleAxes();
+	ui.IMU_2_plot->graph(1)->setName("Pitch");
+	ui.IMU_2_plot->addGraph();
+	ui.IMU_2_plot->graph(2)->setPen(QPen(Qt::red));
+	//ui.IMU_2_plot->graph(2)->setData(IMU_x, IMU_y);
+	ui.IMU_2_plot->graph(2)->rescaleAxes();
+	ui.IMU_2_plot->graph(2)->setName("Yaw");
+
+	ui.IMU_2_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
+	ui.IMU_2_plot->yAxis->setLabel("Amplitude");
+	ui.IMU_2_plot->xAxis->setRange(0, 1000);
+	ui.IMU_2_plot->yAxis->setRange(0, 800);
+	ui.IMU_2_plot->yAxis->setTickLabels(false);
+	ui.IMU_2_plot->plotLayout()->insertRow(0);
+	ui.IMU_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_2_plot, "CH_2"));
+
+	ui.IMU_3_plot->legend->setFont(font);
+	ui.IMU_3_plot->legend->setVisible(true);
+	ui.IMU_3_plot->legend->setRowSpacing(-5);
+	ui.IMU_3_plot->legend->setIconSize(12, 15);
+	ui.IMU_3_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.IMU_3_plot->addGraph();
+	ui.IMU_3_plot->graph(0)->setPen(QPen(Qt::black));
+	//ui.IMU_3_plot->graph(0)->setData(IMU_x, IMU_y);
+	ui.IMU_3_plot->graph(0)->rescaleAxes();
+	ui.IMU_3_plot->graph(0)->setName("Roll");
+	ui.IMU_3_plot->addGraph();
+	ui.IMU_3_plot->graph(1)->setPen(QPen(Qt::blue));
+	//ui.IMU_3_plot->graph(1)->setData(IMU_x, IMU_y);
+	ui.IMU_3_plot->graph(1)->rescaleAxes();
+	ui.IMU_3_plot->graph(1)->setName("Pitch");
+	ui.IMU_3_plot->addGraph();
+	ui.IMU_3_plot->graph(2)->setPen(QPen(Qt::red));
+	//ui.IMU_3_plot->graph(2)->setData(IMU_x, IMU_y);
+	ui.IMU_3_plot->graph(2)->rescaleAxes();
+	ui.IMU_3_plot->graph(2)->setName("Yaw");
+
+	ui.IMU_3_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
+	ui.IMU_3_plot->yAxis->setLabel("Amplitude");
+	ui.IMU_3_plot->xAxis->setRange(0, 1000);
+	ui.IMU_3_plot->yAxis->setRange(0, 800);
+	ui.IMU_3_plot->yAxis->setTickLabels(false);
+	ui.IMU_3_plot->plotLayout()->insertRow(0);
+	ui.IMU_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_3_plot, "CH_3"));
+
+	ui.IMU_4_plot->legend->setFont(font);
+	ui.IMU_4_plot->legend->setVisible(true);
+	ui.IMU_4_plot->legend->setRowSpacing(-5);
+	ui.IMU_4_plot->legend->setIconSize(12, 15);
+	ui.IMU_4_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.IMU_4_plot->addGraph();
+	ui.IMU_4_plot->graph(0)->setPen(QPen(Qt::black));
+	//ui.IMU_4_plot->graph(0)->setData(IMU_x, IMU_y);
+	ui.IMU_4_plot->graph(0)->rescaleAxes();
+	ui.IMU_4_plot->graph(0)->setName("Roll");
+	ui.IMU_4_plot->addGraph();
+	ui.IMU_4_plot->graph(1)->setPen(QPen(Qt::blue));
+	//ui.IMU_4_plot->graph(1)->setData(IMU_x, IMU_y);
+	ui.IMU_4_plot->graph(1)->rescaleAxes();
+	ui.IMU_4_plot->graph(1)->setName("Pitch");
+	ui.IMU_4_plot->addGraph();
+	ui.IMU_4_plot->graph(2)->setPen(QPen(Qt::red));
+	//ui.IMU_4_plot->graph(2)->setData(IMU_x, IMU_y);
+	ui.IMU_4_plot->graph(2)->rescaleAxes();
+	ui.IMU_4_plot->graph(2)->setName("Roll");
+
+	ui.IMU_4_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
+	ui.IMU_4_plot->yAxis->setLabel("Amplitude");
+	ui.IMU_4_plot->xAxis->setRange(0, 1000);
+	ui.IMU_4_plot->yAxis->setRange(0, 800);
+	ui.IMU_4_plot->yAxis->setTickLabels(false);
+	ui.IMU_4_plot->plotLayout()->insertRow(0);
+	ui.IMU_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_4_plot, "CH_4"));
 	// replot
 	// 更新图形，必须调用
 	ui.customPlot->replot();
@@ -868,6 +1004,11 @@ void QCplot::initial()
 	ui.customPlot2->replot();
 	ui.customPlot3->replot();
 	ui.customPlot_mode1->replot();
+
+	ui.IMU_1_plot->replot();
+	ui.IMU_2_plot->replot();
+	ui.IMU_3_plot->replot();
+	ui.IMU_4_plot->replot();
 }
 //~ 给需要存储数据的文件，以当前时间进行命名。如果文件被.open，则以gettime函数中读取的当前时间和对应格式命名该文件，并写入数据。文件被.close，则关闭当前文件，停止数据写入
 void QCplot::gettime()
@@ -926,7 +1067,123 @@ void QCplot::updatePlayerUI()
 			showRealTimeAngle(labelValue, xsens_angle);
 		}
 	}
+	
+	showIMUImage();
 }
+
+void QCplot::showIMUImage()
+{
+	/*IMU_y = QVector<double>::fromStdVector(IMU_1_Roll);
+	ui.IMU_2_plot->graph(0)->setData(IMU_x, IMU_y);
+	ui.IMU_2_plot->replot();*/
+	//qDebug() << IMU_1_Roll[4];
+	//qDebug() << IMU_y;
+	int* plotSize = &(IMU_Thread->imuBuffer->bufferSize);
+	std::queue<double>* tempRollQueue = &(IMU_Thread->imuBuffer->array[1][0]);
+	std::vector<double>* tempRollVector = &(IMU_Thread->imuBuffer->vectorArray[1][0]);
+	std::queue<double>* tempPitchQueue = &(IMU_Thread->imuBuffer->array[1][1]);
+	std::queue<double>* tempYawQueue = &(IMU_Thread->imuBuffer->array[1][2]);
+	/*if (!(*tempRollQueue).empty())
+	{
+		if ((*tempRollVector).size() < (*plotSize))
+		{
+			(*tempRollVector).push_back((*tempRollQueue).back());
+			(*tempRollQueue).pop();
+		}
+		else
+		{
+			qDebug() << "in plot" << endl;
+			IMU_y = QVector<double>::fromStdVector(*tempRollVector);
+			ui.IMU_1_plot->graph(0)->setData(IMU_x, IMU_y);
+			(*tempRollVector).clear();
+		}
+	}*/
+	if (!(*tempRollQueue).empty() && !(*tempPitchQueue).empty() && !(*tempYawQueue).empty())
+	{
+		double addRollNum = (double)(*tempRollQueue).back();
+		double addPitchNum = (double)(*tempPitchQueue).back();
+		double addYawNum = (double)(*tempYawQueue).back();
+		(*tempRollQueue).pop();
+		(*tempPitchQueue).pop();
+		(*tempYawQueue).pop();
+		ui.IMU_1_plot->graph(0)->addData(key_IMU_1, addRollNum);
+		ui.IMU_1_plot->graph(1)->addData(key_IMU_1, addPitchNum);
+		ui.IMU_1_plot->graph(2)->addData(key_IMU_1, addYawNum);
+	}
+	key_IMU_1++;
+	if (key_IMU_1 > 1000)
+	{
+		ui.IMU_1_plot->xAxis->setRange(key_IMU_1 - 999.9, key_IMU_1 + 0.1);
+	}
+	ui.IMU_1_plot->replot();
+	
+}
+void QCplot::showIMUImage_2()
+{
+	int* plotSize = &(IMU_Thread->imuBuffer->bufferSize);
+	std::queue<double>* tempRollQueue = &(IMU_Thread->imuBuffer->array[2][0]);
+	std::queue<double>* tempPitchQueue = &(IMU_Thread->imuBuffer->array[2][1]);
+	std::queue<double>* tempYawQueue = &(IMU_Thread->imuBuffer->array[2][2]);
+	if (!(*tempRollQueue).empty() && !(*tempPitchQueue).empty() && !(*tempYawQueue).empty())
+	{
+		double addRollNum = (double)(*tempRollQueue).back();
+		double addPitchNum = (double)(*tempPitchQueue).back();
+		double addYawNum = (double)(*tempYawQueue).back();
+		(*tempRollQueue).pop();
+		(*tempPitchQueue).pop();
+		(*tempYawQueue).pop();
+		ui.IMU_2_plot->graph(0)->addData(key_IMU_2, addRollNum);
+		ui.IMU_2_plot->graph(1)->addData(key_IMU_2, addPitchNum);
+		ui.IMU_2_plot->graph(2)->addData(key_IMU_2, addYawNum);
+	}
+	key_IMU_2++;
+	if (key_IMU_2 > 1000)
+	{
+		ui.IMU_2_plot->xAxis->setRange(key_IMU_2 - 999.9, key_IMU_2 + 0.1);
+	}
+	ui.IMU_2_plot->replot();
+}
+
+void QCplot::showIMUImage_3()
+{
+	//IMU_y = QVector<double>::fromStdVector(IMU_2_Roll);
+	//ui.IMU_3_plot->graph(0)->setData(IMU_x, IMU_y);
+	//ui.IMU_3_plot->replot();
+	////qDebug() << IMU_1_Roll[4];
+	////qDebug() << IMU_y;
+	int* plotSize = &(IMU_Thread->imuBuffer->bufferSize);
+	std::queue<double>* tempRollQueue = &(IMU_Thread->imuBuffer->array[3][0]);
+	std::queue<double>* tempPitchQueue = &(IMU_Thread->imuBuffer->array[3][1]);
+	std::queue<double>* tempYawQueue = &(IMU_Thread->imuBuffer->array[3][2]);
+	if (!(*tempRollQueue).empty() && !(*tempPitchQueue).empty() && !(*tempYawQueue).empty())
+	{
+		double addRollNum = (double)(*tempRollQueue).back();
+		double addPitchNum = (double)(*tempPitchQueue).back();
+		double addYawNum = (double)(*tempYawQueue).back();
+		(*tempRollQueue).pop();
+		(*tempPitchQueue).pop();
+		(*tempYawQueue).pop();
+		ui.IMU_3_plot->graph(0)->addData(key_IMU_3, addRollNum);
+		ui.IMU_3_plot->graph(1)->addData(key_IMU_3, addPitchNum);
+		ui.IMU_3_plot->graph(2)->addData(key_IMU_3, addYawNum);
+	}
+	key_IMU_3++;
+	if (key_IMU_3 > 1000)
+	{
+		ui.IMU_3_plot->xAxis->setRange(key_IMU_3 - 999.9, key_IMU_3 + 0.1);
+	}
+	ui.IMU_3_plot->replot();
+}
+
+void QCplot::showIMUImage_4()
+{
+	IMU_y = QVector<double>::fromStdVector(IMU_3_Roll);
+	ui.IMU_4_plot->graph(0)->setData(IMU_x, IMU_y);
+	ui.IMU_4_plot->replot();
+	//qDebug() << IMU_1_Roll[4];
+	//qDebug() << IMU_y;
+}
+
 //~ 将A超信号实时刷新显示到控件上
 void QCplot::showimage1(std::vector<std::vector<double>> CurrentPackage)
 {
@@ -3538,3 +3795,386 @@ void QCplot::on_Delsys_On_clicked()
 
 
 /**************************************** 读取delsys数据，C++ SDK（结束） **********************************************/
+
+// 串口
+void QCplot::serialPortInit()
+{
+	ui.start_serialPort_button->setEnabled(true);
+	ui.stop_serialPort_button->setEnabled(false);
+	getExistingSerialPort();
+	baudMap.insert(pair<int, QSerialPort::BaudRate>(1200, QSerialPort::Baud1200));
+	baudMap.insert(pair<int, QSerialPort::BaudRate>(2400, QSerialPort::Baud2400));
+	baudMap.insert(pair<int, QSerialPort::BaudRate>(4800, QSerialPort::Baud4800));
+	baudMap.insert(pair<int, QSerialPort::BaudRate>(9600, QSerialPort::Baud9600));
+	baudMap.insert(pair<int, QSerialPort::BaudRate>(19200, QSerialPort::Baud19200));
+	baudMap.insert(pair<int, QSerialPort::BaudRate>(38400, QSerialPort::Baud38400));
+	baudMap.insert(pair<int, QSerialPort::BaudRate>(57600, QSerialPort::Baud57600));
+	baudMap.insert(pair < int, QSerialPort::BaudRate>(115200, QSerialPort::Baud115200));
+
+	parityMap.insert(pair<std::string, QSerialPort::Parity>("None", QSerialPort::NoParity));
+	parityMap.insert(pair<std::string, QSerialPort::Parity>("Odd", QSerialPort::OddParity));
+	parityMap.insert(pair<std::string, QSerialPort::Parity>("Even", QSerialPort::EvenParity));
+
+	dataBitsMap.insert(pair<int, QSerialPort::DataBits>(5, QSerialPort::Data5));
+	dataBitsMap.insert(pair<int, QSerialPort::DataBits>(6, QSerialPort::Data6));
+	dataBitsMap.insert(pair<int, QSerialPort::DataBits>(7, QSerialPort::Data7));
+	dataBitsMap.insert(pair<int, QSerialPort::DataBits>(8, QSerialPort::Data8));
+
+	stopBitsMap.insert(pair<float, QSerialPort::StopBits>(1.0, QSerialPort::OneStop));
+	stopBitsMap.insert(pair<float, QSerialPort::StopBits>(1.5, QSerialPort::OneAndHalfStop));
+	stopBitsMap.insert(pair<float, QSerialPort::StopBits>(2.0, QSerialPort::TwoStop));
+
+	baudHash.insert(1200, QSerialPort::Baud1200);
+	baudHash.insert(2400, QSerialPort::Baud2400);
+	baudHash.insert(4800, QSerialPort::Baud4800);
+	baudHash.insert(9600, QSerialPort::Baud9600);
+	baudHash.insert(19200, QSerialPort::Baud19200);
+	baudHash.insert(38400, QSerialPort::Baud38400);
+	baudHash.insert(57600, QSerialPort::Baud57600);
+	baudHash.insert(115200, QSerialPort::Baud115200);
+	isReceiveHex = ui.hex_checkBox->isChecked();
+
+	IMUDataPackage.resize(4);
+	for (int i = 0; i < 4; i++)
+	{
+		IMUDataPackage[i].resize(3);
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			IMUDataPackage[i][j].resize(1000);
+		}
+	}
+	IMU_0_Roll.resize(100);
+	IMU_0_Pitch.resize(100);
+	IMU_0_Yaw.resize(100);
+
+	IMU_1_Roll.resize(100);
+	IMU_1_Pitch.resize(100);
+	IMU_1_Yaw.resize(100);
+
+	IMU_2_Roll.resize(100);
+	IMU_2_Pitch.resize(100);
+	IMU_2_Yaw.resize(100);
+
+	IMU_3_Roll.resize(100);
+	IMU_3_Pitch.resize(100);
+	IMU_3_Yaw.resize(100);
+
+	//connect(serialPort, SIGNAL(readyRead()), this, SLOT(readData()));
+	connect(ui.hex_checkBox, SIGNAL(toggled(bool)), this, SLOT(receiveChangeState(bool)));
+	connect(serialPort, SIGNAL(readyRead()), this, SLOT(dispalySerialData()));
+	connect(serialPort, SIGNAL(readyRead()), this, SLOT(updateIMUImage()));
+
+	key_IMU_1 = 0;
+	key_IMU_2 = 0;
+	key_IMU_3 = 0;
+	key_IMU_4 = 0;
+}
+void QCplot::getExistingSerialPort()
+{
+	for (int i = 0; i < ui.serialPort_comboBox->count(); i++)
+	{
+		ui.serialPort_comboBox->removeItem(i);
+	}
+	serialList = serialPortInfo->availablePorts();
+	int serialNum = serialList.length();
+	for (int i = 0; i < serialNum; i++)
+	{
+		QString serialName = serialList[i].portName();
+		ui.serialPort_comboBox->addItem(serialName);
+	}
+}
+void QCplot::on_start_serialPort_button_clicked()
+{
+	if (serialPort == NULL)
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("SerialPort Error") + "\n");
+	}
+	this->setPortName();
+	bool modeSet = serialPort->open(QIODevice::ReadWrite);
+	bool baudSet = this->setBaudRate();
+	bool dataBitsSet = this->setDataBits();
+	bool paritySet = this->setParity();
+	bool stopBitsSet = this->setStopBits();
+	if (modeSet && baudSet && dataBitsSet && paritySet && stopBitsSet)
+	{
+		emit serialPortConnected();
+		ui.start_serialPort_button->setEnabled(false);
+		ui.stop_serialPort_button->setEnabled(true);
+	}
+	IMU_Thread->start();
+}
+void QCplot::on_stop_serialPort_button_clicked()
+{
+	serialPort->close();
+	ui.start_serialPort_button->setEnabled(true);
+	ui.stop_serialPort_button->setEnabled(false);
+}
+void QCplot::setPortName()
+{
+	QVariant data = ui.serialPort_comboBox->currentText();
+	ui.receiveWindow->append(data.toString() + "\n");
+	serialPort->setPortName(data.toString());
+}
+bool QCplot::setBaudRate()
+{
+	QVariant data = ui.baud_comboBox->currentText();
+	ui.receiveWindow->append(data.toString() + "\n");
+	//QSerialPort::BaudRate baudRate = baudMap[data.toInt()];
+	QSerialPort::BaudRate baudRate = baudHash[data.toInt()];
+	//bool baudSet = serialPort->setBaudRate(baudRate);
+	bool baudSet = serialPort->setBaudRate(data.toInt());
+	if (baudSet == false)
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("波特率设置失败") + "\n");
+	}
+	else
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("波特率设置为") + data.toString() + "\n");
+	}
+	return baudSet;
+}
+bool QCplot::setDataBits()
+{
+	QVariant data = ui.dataBits_comboBox->currentText();
+	QSerialPort::DataBits dataBits = dataBitsMap[data.toInt()];
+	qDebug() << dataBits;
+	bool dataBitsSet = serialPort->setDataBits(dataBits);
+	if (dataBitsSet == false)
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("数据位设置失败") + "\n");
+	}
+	else
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("数据位设置为") + data.toString() + "\n");
+	}
+	return dataBitsSet;
+}
+bool QCplot::setParity()
+{
+	QVariant data = ui.verify_comboBox->currentText();
+	QSerialPort::Parity parity = parityMap[data.toString().toStdString()];
+	bool paritySet = serialPort->setParity(parity);
+	if (paritySet == false)
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("奇偶校验位设置失败") + "\n");
+	}
+	else
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("奇偶校验位设置为") + data.toString() + "\n");
+	}
+	return paritySet;
+}
+bool QCplot::setStopBits()
+{
+	QVariant data = ui.stopBit_comboBox->currentText();
+	QSerialPort::StopBits stopBits = stopBitsMap[data.toFloat()];
+	bool stopBitsSet = serialPort->setStopBits(stopBits);
+	if (stopBitsSet == false)
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("停止位设置失败") + "\n");
+	}
+	else
+	{
+		ui.receiveWindow->append(QString::fromLocal8Bit("停止位设置为") + data.toString() + "\n");
+	}
+	return stopBits;
+}
+void QCplot::receiveChangeState(bool checkFlag)
+{
+	/*if (checkFlag)
+		isReceiveHex = true;
+	else
+		isReceiveHex = false;*/
+	isReceiveHex = ui.hex_checkBox->isChecked();
+	qDebug() << isReceiveHex;
+}
+void QCplot::readData()
+{
+	int16_t t = 0;
+	if (serialPort->bytesAvailable() < 0)
+	{
+		ui.receiveWindow->append("No Data");
+		return;
+	}
+	//qDebug() << serialPort->bytesAvailable() << endl;
+	
+	serialPort->setReadBufferSize(22);
+	int size = serialPort->readBufferSize();
+	qDebug() << size;
+	//serialPort->setReadBufferSize(1000);
+	QByteArray buffer = serialPort->readAll();
+	QString receiveMsg;
+	if (isReceiveHex)
+		receiveMsg = ByteArrayToHexStr(buffer);
+	else
+		receiveMsg = buffer;
+	//receiveMsg = ByteArrayToHexStr(buffer);
+	//qDebug() << receiveMsg.length();
+	qDebug() << receiveMsg;
+	ui.receiveWindow->append(receiveMsg);
+	
+	bool ok = 1;
+	QByteArray tempBuffer = buffer.toHex();
+	qDebug() << tempBuffer.length();
+	IMUSerialPortBuffer.clear();
+	for (int i = 0; i < tempBuffer.length(); i += 2)
+	{
+		IMUSerialPortBuffer += tempBuffer.mid(i, 2).toInt(&ok, 16);
+	}
+	qDebug() << IMUSerialPortBuffer.length() << endl;
+	this->dataUnpackage();
+	showIMUImage();
+	showIMUImage_3();
+	showIMUImage_4();
+}
+QByteArray QCplot::HexStrToByteArray(QString str)
+{
+	QByteArray senDdata;
+	int hexData, lowHexdata;
+	int hexDataLen = 0;
+	int len = str.length();
+	senDdata.resize(len / 2);
+	char lstr, hstr;
+	for (int i = 0; i < len; )
+	{
+		hstr = str[i].toLatin1();
+		if (hstr == ' ')
+		{
+			i++;
+			continue;
+		}
+		i++;
+		if (i >= len)
+			break;
+		lstr = str[i].toLatin1();
+		hexData = ConvertHexChar(hstr);
+		lowHexdata = ConvertHexChar(lstr);
+		if ((hexData == 16) || (lowHexdata == 16))
+			break;
+		else
+			hexData = hexData * 16 + lowHexdata;
+		i++;
+		senDdata[hexDataLen] = hexData;
+		hexDataLen++;
+	}
+	senDdata.resize(hexDataLen);
+	return senDdata;
+}
+char QCplot::ConvertHexChar(char ch)
+{
+	if ((ch >= '0') && (ch <= '9'))
+		return ch - 0x30;
+	else if ((ch >= 'A') && (ch <= 'F'))
+		return ch - 'A' + 10;
+	else if ((ch >= 'a') && (ch <= 'f'))
+		return ch - 'a' + 10;
+	else return (-1);
+}
+QString QCplot::ByteArrayToHexStr(QByteArray data)
+{
+	QString temp = "";
+	QString hex = data.toHex();
+	for (int i = 0; i < hex.length(); i = i + 2)
+	{
+		temp += hex.mid(i, 2) + " ";
+	}
+	return temp.trimmed().toUpper();
+}
+void QCplot::dataUnpackage()
+{
+	if (IMU_1_Roll.size() > 1000)
+	{
+		IMU_1_Roll.clear();
+	}
+	if (IMU_2_Roll.size() > 1000)
+	{
+		IMU_2_Roll.clear();
+	}
+	if (IMU_3_Roll.size() > 1000)
+	{
+		IMU_3_Roll.clear();
+	}
+	int16_t tempRoll = 0, tempPitch = 0, tempYaw = 0;
+	unsigned char rollHigh = 0, rollLow = 0, pitchHigh = 0, pitchLow = 0, yawHigh = 0, yawLow = 0;
+	int channel = 0;
+	if (IMUSerialPortBuffer[0].operator == (0x88))
+	{
+		qDebug() << "inn" << endl;
+		unsigned char sum = 0;
+		for (int i = 0; i < IMUSerialPortBuffer.length(); i++)
+		{
+			sum += IMUSerialPortBuffer[i];
+		}
+		if(IMUSerialPortBuffer[1].operator== (0xA1) || IMUSerialPortBuffer[1].operator== (0xA2) || IMUSerialPortBuffer[1].operator== (0xA3) || IMUSerialPortBuffer[1].operator== (0xA4))
+		//if (IMUSerialPortBuffer[IMU_Datalength - 1].operator== (sum))
+		{
+			qDebug() << "in" << endl;
+			channel = IMUSerialPortBuffer[1];
+			rollHigh = IMUSerialPortBuffer[15];
+			rollLow = IMUSerialPortBuffer[16];
+			pitchHigh = IMUSerialPortBuffer[17];
+			pitchLow = IMUSerialPortBuffer[18];
+			yawHigh = IMUSerialPortBuffer[19];
+			yawHigh = IMUSerialPortBuffer[20];
+			
+			tempRoll = ((rollHigh << 8) | rollLow) / 100;
+			tempPitch = ((pitchHigh << 8) | pitchLow) / 100;
+			tempYaw = ((yawHigh << 8) | yawLow) / 100;
+
+			if (IMUSerialPortBuffer[1].operator== (0xA1))
+			{
+				channel = 0;
+				IMU_0_Roll.push_back(tempRoll);
+				IMU_0_Pitch.push_back(tempPitch);
+				IMU_0_Yaw.push_back(tempYaw);
+				qDebug() << "imu0roll";
+				qDebug() << IMU_0_Roll[3];
+			}
+			else if (IMUSerialPortBuffer[1].operator== (0xA2))
+			{
+				channel = 1;
+				IMU_1_Roll.push_back(tempRoll);
+				IMU_1_Pitch.push_back(tempPitch);
+				IMU_1_Yaw.push_back(tempYaw);
+			}
+			else if (IMUSerialPortBuffer[1].operator== (0xA3))
+			{
+				channel = 2;
+				IMU_2_Roll.push_back(tempRoll);
+				IMU_2_Pitch.push_back(tempPitch);
+				IMU_2_Yaw.push_back(tempYaw);
+			}
+			else if (IMUSerialPortBuffer[1].operator== (0xA4))
+			{
+				channel = 3;
+				IMU_3_Roll.push_back(tempRoll);
+				IMU_3_Pitch.push_back(tempPitch);
+				IMU_3_Yaw.push_back(tempYaw);
+			}
+			qDebug() << tempRoll;
+			/*IMUDataPackage[channel][0].push_back(tempRoll);
+			
+			IMUDataPackage[channel][1].push_back(tempPitch);
+			IMUDataPackage[channel][2].push_back(tempYaw);*/
+			qDebug() << "stop" << endl;
+		}
+	}
+}
+void QCplot::dispalySerialData()
+{
+	QString receiveMsg;
+	if (isReceiveHex)
+		receiveMsg = ByteArrayToHexStr(IMU_Thread->receiveBuffer);
+	else
+		receiveMsg = IMU_Thread->receiveBuffer;
+	ui.receiveWindow->append(receiveMsg);
+}
+void QCplot::updateIMUImage()
+{
+	this->showIMUImage();
+	this->showIMUImage_2();
+	this->showIMUImage_3();
+}

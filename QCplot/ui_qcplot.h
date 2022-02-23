@@ -25,7 +25,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
@@ -33,6 +32,7 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QVBoxLayout>
@@ -191,32 +191,32 @@ public:
     QCheckBox *hex_checkBox;
     QPushButton *clear_button;
     QGroupBox *groupBox_2;
-    QVBoxLayout *verticalLayout_4;
+    QTextBrowser *receiveWindow;
+    QWidget *widget4;
     QHBoxLayout *horizontalLayout_17;
-    QLineEdit *lineEdit;
+    QLineEdit *sendWindow;
     QPushButton *serialSend_button;
-    QPlainTextEdit *plainTextEdit;
     QWidget *MutiData;
     QFrame *line;
     QFrame *line_2;
-    QWidget *widget4;
+    QWidget *layoutWidget1;
     QHBoxLayout *horizontalLayout_18;
     QVBoxLayout *verticalLayout_5;
-    QCustomPlot *widget_2;
-    QCustomPlot *widget_3;
-    QCustomPlot *widget_4;
-    QCustomPlot *widget_5;
+    QCustomPlot *Amode_1_plot;
+    QCustomPlot *Amode_2_plot;
+    QCustomPlot *Amode_3_plot;
+    QCustomPlot *Amode_4_plot;
     QVBoxLayout *verticalLayout_6;
-    QCustomPlot *widget_6;
-    QCustomPlot *widget_7;
-    QCustomPlot *widget_8;
-    QCustomPlot *widget_9;
+    QCustomPlot *EMG_1_plot;
+    QCustomPlot *EMG_3_plot;
+    QCustomPlot *EMG_2_plot;
+    QCustomPlot *EMG_4_plot;
     QVBoxLayout *verticalLayout_7;
-    QCustomPlot *widget_10;
-    QCustomPlot *widget_11;
-    QCustomPlot *widget_12;
-    QCustomPlot *widget_13;
-    QWidget *widget5;
+    QCustomPlot *IMU_1_plot;
+    QCustomPlot *IMU_2_plot;
+    QCustomPlot *IMU_3_plot;
+    QCustomPlot *IMU_4_plot;
+    QWidget *layoutWidget2;
     QHBoxLayout *horizontalLayout_8;
     QLabel *Amode_label;
     QLabel *EMG_label;
@@ -230,7 +230,7 @@ public:
     {
         if (QCplotClass->objectName().isEmpty())
             QCplotClass->setObjectName(QStringLiteral("QCplotClass"));
-        QCplotClass->resize(1130, 923);
+        QCplotClass->resize(1130, 928);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -1150,48 +1150,28 @@ public:
         groupBox_2 = new QGroupBox(SetSerialPort);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         groupBox_2->setGeometry(QRect(0, 13, 751, 811));
-        verticalLayout_4 = new QVBoxLayout(groupBox_2);
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        horizontalLayout_17 = new QHBoxLayout();
+        receiveWindow = new QTextBrowser(groupBox_2);
+        receiveWindow->setObjectName(QStringLiteral("receiveWindow"));
+        receiveWindow->setGeometry(QRect(10, 61, 731, 741));
+        widget4 = new QWidget(groupBox_2);
+        widget4->setObjectName(QStringLiteral("widget4"));
+        widget4->setGeometry(QRect(13, 13, 731, 31));
+        horizontalLayout_17 = new QHBoxLayout(widget4);
         horizontalLayout_17->setSpacing(6);
+        horizontalLayout_17->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_17->setObjectName(QStringLiteral("horizontalLayout_17"));
-        lineEdit = new QLineEdit(groupBox_2);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
+        horizontalLayout_17->setContentsMargins(0, 0, 0, 0);
+        sendWindow = new QLineEdit(widget4);
+        sendWindow->setObjectName(QStringLiteral("sendWindow"));
 
-        horizontalLayout_17->addWidget(lineEdit);
+        horizontalLayout_17->addWidget(sendWindow);
 
-        serialSend_button = new QPushButton(groupBox_2);
+        serialSend_button = new QPushButton(widget4);
         serialSend_button->setObjectName(QStringLiteral("serialSend_button"));
 
         horizontalLayout_17->addWidget(serialSend_button);
 
-
-        verticalLayout_4->addLayout(horizontalLayout_17);
-
-        plainTextEdit = new QPlainTextEdit(groupBox_2);
-        plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
-
-        verticalLayout_4->addWidget(plainTextEdit);
-
         tabWidget->addTab(SetSerialPort, QString());
-        baud_comboBox->raise();
-        stopBit_comboBox->raise();
-        serialPort_comboBox->raise();
-        baud_label->raise();
-        serialPort_label->raise();
-        stopBit_label->raise();
-        dataBits_comboBox->raise();
-        start_serialPort_button->raise();
-        verify_comboBox->raise();
-        verify_label->raise();
-        dataBits_label->raise();
-        stop_serialPort_button->raise();
-        hex_checkBox->raise();
-        dataBits_label->raise();
-        groupBox->raise();
-        groupBox_2->raise();
         MutiData = new QWidget();
         MutiData->setObjectName(QStringLiteral("MutiData"));
         line = new QFrame(MutiData);
@@ -1204,10 +1184,10 @@ public:
         line_2->setGeometry(QRect(734, 0, 3, 825));
         line_2->setFrameShape(QFrame::VLine);
         line_2->setFrameShadow(QFrame::Sunken);
-        widget4 = new QWidget(MutiData);
-        widget4->setObjectName(QStringLiteral("widget4"));
-        widget4->setGeometry(QRect(0, 40, 1101, 781));
-        horizontalLayout_18 = new QHBoxLayout(widget4);
+        layoutWidget1 = new QWidget(MutiData);
+        layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(0, 40, 1101, 781));
+        horizontalLayout_18 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_18->setSpacing(6);
         horizontalLayout_18->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_18->setObjectName(QStringLiteral("horizontalLayout_18"));
@@ -1215,25 +1195,25 @@ public:
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setSpacing(6);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        widget_2 = new QCustomPlot(widget4);
-        widget_2->setObjectName(QStringLiteral("widget_2"));
+        Amode_1_plot = new QCustomPlot(layoutWidget1);
+        Amode_1_plot->setObjectName(QStringLiteral("Amode_1_plot"));
 
-        verticalLayout_5->addWidget(widget_2);
+        verticalLayout_5->addWidget(Amode_1_plot);
 
-        widget_3 = new QCustomPlot(widget4);
-        widget_3->setObjectName(QStringLiteral("widget_3"));
+        Amode_2_plot = new QCustomPlot(layoutWidget1);
+        Amode_2_plot->setObjectName(QStringLiteral("Amode_2_plot"));
 
-        verticalLayout_5->addWidget(widget_3);
+        verticalLayout_5->addWidget(Amode_2_plot);
 
-        widget_4 = new QCustomPlot(widget4);
-        widget_4->setObjectName(QStringLiteral("widget_4"));
+        Amode_3_plot = new QCustomPlot(layoutWidget1);
+        Amode_3_plot->setObjectName(QStringLiteral("Amode_3_plot"));
 
-        verticalLayout_5->addWidget(widget_4);
+        verticalLayout_5->addWidget(Amode_3_plot);
 
-        widget_5 = new QCustomPlot(widget4);
-        widget_5->setObjectName(QStringLiteral("widget_5"));
+        Amode_4_plot = new QCustomPlot(layoutWidget1);
+        Amode_4_plot->setObjectName(QStringLiteral("Amode_4_plot"));
 
-        verticalLayout_5->addWidget(widget_5);
+        verticalLayout_5->addWidget(Amode_4_plot);
 
 
         horizontalLayout_18->addLayout(verticalLayout_5);
@@ -1241,25 +1221,25 @@ public:
         verticalLayout_6 = new QVBoxLayout();
         verticalLayout_6->setSpacing(6);
         verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
-        widget_6 = new QCustomPlot(widget4);
-        widget_6->setObjectName(QStringLiteral("widget_6"));
+        EMG_1_plot = new QCustomPlot(layoutWidget1);
+        EMG_1_plot->setObjectName(QStringLiteral("EMG_1_plot"));
 
-        verticalLayout_6->addWidget(widget_6);
+        verticalLayout_6->addWidget(EMG_1_plot);
 
-        widget_7 = new QCustomPlot(widget4);
-        widget_7->setObjectName(QStringLiteral("widget_7"));
+        EMG_3_plot = new QCustomPlot(layoutWidget1);
+        EMG_3_plot->setObjectName(QStringLiteral("EMG_3_plot"));
 
-        verticalLayout_6->addWidget(widget_7);
+        verticalLayout_6->addWidget(EMG_3_plot);
 
-        widget_8 = new QCustomPlot(widget4);
-        widget_8->setObjectName(QStringLiteral("widget_8"));
+        EMG_2_plot = new QCustomPlot(layoutWidget1);
+        EMG_2_plot->setObjectName(QStringLiteral("EMG_2_plot"));
 
-        verticalLayout_6->addWidget(widget_8);
+        verticalLayout_6->addWidget(EMG_2_plot);
 
-        widget_9 = new QCustomPlot(widget4);
-        widget_9->setObjectName(QStringLiteral("widget_9"));
+        EMG_4_plot = new QCustomPlot(layoutWidget1);
+        EMG_4_plot->setObjectName(QStringLiteral("EMG_4_plot"));
 
-        verticalLayout_6->addWidget(widget_9);
+        verticalLayout_6->addWidget(EMG_4_plot);
 
 
         horizontalLayout_18->addLayout(verticalLayout_6);
@@ -1267,51 +1247,51 @@ public:
         verticalLayout_7 = new QVBoxLayout();
         verticalLayout_7->setSpacing(6);
         verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
-        widget_10 = new QCustomPlot(widget4);
-        widget_10->setObjectName(QStringLiteral("widget_10"));
+        IMU_1_plot = new QCustomPlot(layoutWidget1);
+        IMU_1_plot->setObjectName(QStringLiteral("IMU_1_plot"));
 
-        verticalLayout_7->addWidget(widget_10);
+        verticalLayout_7->addWidget(IMU_1_plot);
 
-        widget_11 = new QCustomPlot(widget4);
-        widget_11->setObjectName(QStringLiteral("widget_11"));
+        IMU_2_plot = new QCustomPlot(layoutWidget1);
+        IMU_2_plot->setObjectName(QStringLiteral("IMU_2_plot"));
 
-        verticalLayout_7->addWidget(widget_11);
+        verticalLayout_7->addWidget(IMU_2_plot);
 
-        widget_12 = new QCustomPlot(widget4);
-        widget_12->setObjectName(QStringLiteral("widget_12"));
+        IMU_3_plot = new QCustomPlot(layoutWidget1);
+        IMU_3_plot->setObjectName(QStringLiteral("IMU_3_plot"));
 
-        verticalLayout_7->addWidget(widget_12);
+        verticalLayout_7->addWidget(IMU_3_plot);
 
-        widget_13 = new QCustomPlot(widget4);
-        widget_13->setObjectName(QStringLiteral("widget_13"));
+        IMU_4_plot = new QCustomPlot(layoutWidget1);
+        IMU_4_plot->setObjectName(QStringLiteral("IMU_4_plot"));
 
-        verticalLayout_7->addWidget(widget_13);
+        verticalLayout_7->addWidget(IMU_4_plot);
 
 
         horizontalLayout_18->addLayout(verticalLayout_7);
 
-        widget5 = new QWidget(MutiData);
-        widget5->setObjectName(QStringLiteral("widget5"));
-        widget5->setGeometry(QRect(10, 10, 1091, 22));
-        horizontalLayout_8 = new QHBoxLayout(widget5);
+        layoutWidget2 = new QWidget(MutiData);
+        layoutWidget2->setObjectName(QStringLiteral("layoutWidget2"));
+        layoutWidget2->setGeometry(QRect(10, 10, 1091, 22));
+        horizontalLayout_8 = new QHBoxLayout(layoutWidget2);
         horizontalLayout_8->setSpacing(6);
         horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
         horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
-        Amode_label = new QLabel(widget5);
+        Amode_label = new QLabel(layoutWidget2);
         Amode_label->setObjectName(QStringLiteral("Amode_label"));
         Amode_label->setLayoutDirection(Qt::LeftToRight);
         Amode_label->setAlignment(Qt::AlignCenter);
 
         horizontalLayout_8->addWidget(Amode_label);
 
-        EMG_label = new QLabel(widget5);
+        EMG_label = new QLabel(layoutWidget2);
         EMG_label->setObjectName(QStringLiteral("EMG_label"));
         EMG_label->setAlignment(Qt::AlignCenter);
 
         horizontalLayout_8->addWidget(EMG_label);
 
-        IMU_label = new QLabel(widget5);
+        IMU_label = new QLabel(layoutWidget2);
         IMU_label->setObjectName(QStringLiteral("IMU_label"));
         IMU_label->setAlignment(Qt::AlignCenter);
 
@@ -1341,7 +1321,7 @@ public:
 
         retranslateUi(QCplotClass);
 
-        tabWidget->setCurrentIndex(5);
+        tabWidget->setCurrentIndex(4);
 
 
         QMetaObject::connectSlotsByName(QCplotClass);
@@ -1442,13 +1422,10 @@ public:
          << QApplication::translate("QCplotClass", "2400", 0)
          << QApplication::translate("QCplotClass", "4800", 0)
          << QApplication::translate("QCplotClass", "9600", 0)
-         << QApplication::translate("QCplotClass", "15200", 0)
-         << QApplication::translate("QCplotClass", "25600", 0)
+         << QApplication::translate("QCplotClass", "19200", 0)
+         << QApplication::translate("QCplotClass", "38400", 0)
+         << QApplication::translate("QCplotClass", "57600", 0)
          << QApplication::translate("QCplotClass", "115200", 0)
-         << QApplication::translate("QCplotClass", "250000", 0)
-         << QApplication::translate("QCplotClass", "256000", 0)
-         << QApplication::translate("QCplotClass", "500000", 0)
-         << QApplication::translate("QCplotClass", "921600", 0)
         );
         stopBit_label->setText(QApplication::translate("QCplotClass", "\345\201\234\346\255\242\344\275\215", 0));
         stopBit_comboBox->clear();
