@@ -110,6 +110,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_IMUProcesser.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="EMGProcesser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_EMGProcesser.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_EMGProcesser.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="qcplot.h">
@@ -134,6 +143,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="IMUProcesser.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="EMGProcesser.h">
       <Filter>Source Files</Filter>
     </CustomBuild>
   </ItemGroup>

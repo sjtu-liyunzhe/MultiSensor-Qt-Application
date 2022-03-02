@@ -561,6 +561,15 @@ QCplot::QCplot(QWidget *parent)
 	serialPortInit();
 	IMU_Thread = new IMUProcesser(serialPort);
 	IMU_Datalength = 22;
+
+	// EMG串口
+	emgSerialPort = new QSerialPort();
+	emgSerialPortInfo = new QSerialPortInfo();
+	emgSerialPortInit();
+	
+	EMG_Thread = new EMGProcesser(emgSerialPort);
+	EMG_Datalength = 8;
+	
 } 
 
 
@@ -885,17 +894,17 @@ void QCplot::initial()
 	ui.IMU_1_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
 	ui.IMU_1_plot->addGraph();
 	ui.IMU_1_plot->graph(0)->setPen(QPen(Qt::black));
-	ui.IMU_1_plot->graph(0)->setData(IMU_x, IMU_y);
+	//ui.IMU_1_plot->graph(0)->setData(IMU_x, IMU_y);
 	ui.IMU_1_plot->graph(0)->rescaleAxes();
 	ui.IMU_1_plot->graph(0)->setName("Roll");
 	ui.IMU_1_plot->addGraph();
 	ui.IMU_1_plot->graph(1)->setPen(QPen(Qt::blue));
-	ui.IMU_1_plot->graph(1)->setData(IMU_x, IMU_y);
+	//ui.IMU_1_plot->graph(1)->setData(IMU_x, IMU_y);
 	ui.IMU_1_plot->graph(1)->rescaleAxes();
 	ui.IMU_1_plot->graph(1)->setName("Pitch");
 	ui.IMU_1_plot->addGraph();
 	ui.IMU_1_plot->graph(2)->setPen(QPen(Qt::red));
-	ui.IMU_1_plot->graph(2)->setData(IMU_x, IMU_y);
+	//ui.IMU_1_plot->graph(2)->setData(IMU_x, IMU_y);
 	ui.IMU_1_plot->graph(2)->rescaleAxes();
 	ui.IMU_1_plot->graph(2)->setName("Yaw");
 
@@ -903,8 +912,8 @@ void QCplot::initial()
 	//ui.IMU_1_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_1_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_1_plot->xAxis->setRange(0, 1000);
-	ui.IMU_1_plot->yAxis->setRange(0, 800);
-	ui.IMU_1_plot->yAxis->setTickLabels(false);
+	ui.IMU_1_plot->yAxis->setRange(-180, 180);
+	//ui.IMU_1_plot->yAxis->setTickLabels(false);
 	ui.IMU_1_plot->plotLayout()->insertRow(0);
 	ui.IMU_1_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_1_plot, "CH_1"));
 
@@ -933,8 +942,8 @@ void QCplot::initial()
 	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_2_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_2_plot->xAxis->setRange(0, 1000);
-	ui.IMU_2_plot->yAxis->setRange(0, 800);
-	ui.IMU_2_plot->yAxis->setTickLabels(false);
+	ui.IMU_2_plot->yAxis->setRange(-180, 180);
+	//ui.IMU_2_plot->yAxis->setTickLabels(false);
 	ui.IMU_2_plot->plotLayout()->insertRow(0);
 	ui.IMU_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_2_plot, "CH_2"));
 
@@ -963,8 +972,8 @@ void QCplot::initial()
 	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_3_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_3_plot->xAxis->setRange(0, 1000);
-	ui.IMU_3_plot->yAxis->setRange(0, 800);
-	ui.IMU_3_plot->yAxis->setTickLabels(false);
+	ui.IMU_3_plot->yAxis->setRange(-180, 180);
+	//ui.IMU_3_plot->yAxis->setTickLabels(false);
 	ui.IMU_3_plot->plotLayout()->insertRow(0);
 	ui.IMU_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_3_plot, "CH_3"));
 
@@ -993,10 +1002,77 @@ void QCplot::initial()
 	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_4_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_4_plot->xAxis->setRange(0, 1000);
-	ui.IMU_4_plot->yAxis->setRange(0, 800);
-	ui.IMU_4_plot->yAxis->setTickLabels(false);
+	ui.IMU_4_plot->yAxis->setRange(-180, 180);
+	//ui.IMU_4_plot->yAxis->setTickLabels(false);
 	ui.IMU_4_plot->plotLayout()->insertRow(0);
 	ui.IMU_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_4_plot, "CH_4"));
+	
+	// EMG
+	ui.EMG_1_plot->legend->setFont(font);
+	ui.EMG_1_plot->legend->setVisible(true);
+	ui.EMG_1_plot->legend->setRowSpacing(-5);
+	ui.EMG_1_plot->legend->setIconSize(12, 15);
+	ui.EMG_1_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.EMG_1_plot->addGraph();
+	ui.EMG_1_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.EMG_1_plot->graph(0)->rescaleAxes();
+	ui.EMG_1_plot->graph(0)->setName("EMG");
+	ui.EMG_1_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.EMG_1_plot->yAxis->setLabel("Amplitude");
+	ui.EMG_1_plot->xAxis->setRange(0, 1000);
+	ui.EMG_1_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_1_plot->plotLayout()->insertRow(0);
+	ui.EMG_1_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_1_plot, "CH_1"));
+
+	ui.EMG_2_plot->legend->setFont(font);
+	ui.EMG_2_plot->legend->setVisible(true);
+	ui.EMG_2_plot->legend->setRowSpacing(-5);
+	ui.EMG_2_plot->legend->setIconSize(12, 15);
+	ui.EMG_2_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.EMG_2_plot->addGraph();
+	ui.EMG_2_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.EMG_2_plot->graph(0)->rescaleAxes();
+	ui.EMG_2_plot->graph(0)->setName("EMG");
+	ui.EMG_2_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.EMG_2_plot->yAxis->setLabel("Amplitude");
+	ui.EMG_2_plot->xAxis->setRange(0, 1000);
+	ui.EMG_2_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_2_plot->plotLayout()->insertRow(0);
+	ui.EMG_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_2_plot, "CH_2"));
+
+	ui.EMG_3_plot->legend->setFont(font);
+	ui.EMG_3_plot->legend->setVisible(true);
+	ui.EMG_3_plot->legend->setRowSpacing(-5);
+	ui.EMG_3_plot->legend->setIconSize(12, 15);
+	ui.EMG_3_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.EMG_3_plot->addGraph();
+	ui.EMG_3_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.EMG_3_plot->graph(0)->rescaleAxes();
+	ui.EMG_3_plot->graph(0)->setName("EMG");
+	ui.EMG_3_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.EMG_3_plot->yAxis->setLabel("Amplitude");
+	ui.EMG_3_plot->xAxis->setRange(0, 1000);
+	ui.EMG_3_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_3_plot->plotLayout()->insertRow(0);
+	ui.EMG_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_3_plot, "CH_3"));
+
+	ui.EMG_4_plot->legend->setFont(font);
+	ui.EMG_4_plot->legend->setVisible(true);
+	ui.EMG_4_plot->legend->setRowSpacing(-5);
+	ui.EMG_4_plot->legend->setIconSize(12, 15);
+	ui.EMG_4_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.EMG_4_plot->addGraph();
+	ui.EMG_4_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.EMG_4_plot->graph(0)->rescaleAxes();
+	ui.EMG_4_plot->graph(0)->setName("EMG");
+	ui.EMG_4_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.EMG_4_plot->yAxis->setLabel("Amplitude");
+	ui.EMG_4_plot->xAxis->setRange(0, 1000);
+	ui.EMG_4_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_4_plot->plotLayout()->insertRow(0);
+	ui.EMG_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_2_plot, "CH_2"));
+	
+	
 	// replot
 	// 更新图形，必须调用
 	ui.customPlot->replot();
@@ -1009,6 +1085,11 @@ void QCplot::initial()
 	ui.IMU_2_plot->replot();
 	ui.IMU_3_plot->replot();
 	ui.IMU_4_plot->replot();
+
+	ui.EMG_1_plot->replot();
+	ui.EMG_2_plot->replot();
+	ui.EMG_3_plot->replot();
+	ui.EMG_4_plot->replot();
 }
 //~ 给需要存储数据的文件，以当前时间进行命名。如果文件被.open，则以gettime函数中读取的当前时间和对应格式命名该文件，并写入数据。文件被.close，则关闭当前文件，停止数据写入
 void QCplot::gettime()
@@ -1068,7 +1149,7 @@ void QCplot::updatePlayerUI()
 		}
 	}
 	
-	showIMUImage();
+	//showIMUImage();
 }
 
 void QCplot::showIMUImage()
@@ -1182,6 +1263,52 @@ void QCplot::showIMUImage_4()
 	ui.IMU_4_plot->replot();
 	//qDebug() << IMU_1_Roll[4];
 	//qDebug() << IMU_y;
+}
+
+void QCplot::showEMGImage_1()
+{
+	//std::queue<double>* c_1_tempQueue = &(EMG_Thread->emgBuffer->array[0]);
+	std::vector<std::queue<double>*> tempQueue;
+	tempQueue.resize(4);
+	for (int i = 0; i < 4; i++)
+	{
+		tempQueue[i] = &(EMG_Thread->emgBuffer->array[i]);
+	}
+	bool isEmpty = false;
+	//qDebug() << tempQueue[0] << endl;
+	for (int i = 0; i < 4; i++)
+	{
+		if (tempQueue[i]->empty())
+			isEmpty = true;
+	}
+	//qDebug() << isEmpty << endl;
+	if (!isEmpty)
+	{
+		ui.EMG_1_plot->graph(0)->addData(key_EMG_1, double(tempQueue[0]->back()));
+		//qDebug() << double(tempQueue[0]->back()) << endl;
+		tempQueue[0]->pop();		// == (*(tempQueue[0])).pop()
+		ui.EMG_2_plot->graph(0)->addData(key_EMG_1, double(tempQueue[1]->back()));
+		tempQueue[1]->pop();
+		ui.EMG_3_plot->graph(0)->addData(key_EMG_1, double(tempQueue[2]->back()));
+		tempQueue[2]->pop();
+		ui.EMG_4_plot->graph(0)->addData(key_EMG_1, double(tempQueue[3]->back()));
+		tempQueue[3]->pop();
+		
+	}
+	/*key_EMG_1++;
+	ui.EMG_1_plot->replot();*/
+	key_EMG_1++;
+	if (key_EMG_1 > 1000)
+	{
+		ui.EMG_1_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
+		ui.EMG_2_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
+		ui.EMG_3_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
+		ui.EMG_4_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
+	}
+	ui.EMG_1_plot->replot();
+	ui.EMG_2_plot->replot();
+	ui.EMG_3_plot->replot();
+	ui.EMG_4_plot->replot();
 }
 
 //~ 将A超信号实时刷新显示到控件上
@@ -3872,6 +3999,16 @@ void QCplot::serialPortInit()
 	key_IMU_3 = 0;
 	key_IMU_4 = 0;
 }
+void QCplot::emgSerialPortInit()
+{
+	ui.emg_start_serialPort_button->setEnabled(true);
+	ui.emg_stop_serialPort_button->setEnabled(false);
+	getEmgExistingSerialPort();
+	connect(ui.emg_hex_checkBox, SIGNAL(toggled(bool)), this, SLOT(receiveChangeState(bool)));
+	connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(displayEMGSerialData()));
+	connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(updateEMGImage()));
+	key_EMG_1 = 0;
+}
 void QCplot::getExistingSerialPort()
 {
 	for (int i = 0; i < ui.serialPort_comboBox->count(); i++)
@@ -3884,6 +4021,20 @@ void QCplot::getExistingSerialPort()
 	{
 		QString serialName = serialList[i].portName();
 		ui.serialPort_comboBox->addItem(serialName);
+	}
+}
+void QCplot::getEmgExistingSerialPort()
+{
+	for (int i = 0; i < ui.emg_serialPort_comboBox->count(); i++)
+	{
+		ui.emg_serialPort_comboBox->removeItem(i);
+	}
+	emgSerialList = emgSerialPortInfo->availablePorts();
+	int emgSerialNum = emgSerialList.length();
+	for (int i = 0; i < emgSerialNum; i++)
+	{
+		QString emgSerialName = emgSerialList[i].portName();
+		ui.emg_serialPort_comboBox->addItem(emgSerialName);
 	}
 }
 void QCplot::on_start_serialPort_button_clicked()
@@ -3906,17 +4057,48 @@ void QCplot::on_start_serialPort_button_clicked()
 	}
 	IMU_Thread->start();
 }
+void QCplot::on_emg_start_serialPort_button_clicked()
+{
+	if (emgSerialPort == NULL)
+	{
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("SerialPort Error"));
+	}
+	this->setEmgPortName();
+	bool emgModeSet = emgSerialPort->open(QIODevice::ReadWrite);
+	bool emgBaudSet = this->setEmgBaudRate();
+	//bool emgBaudSet = this->setBaudRate();
+	bool emgDataBitsSet = this->setEmgDataBits();
+	bool emgParitySet = this->setEmgStopBits();
+	if (emgModeSet && emgBaudSet && emgDataBitsSet && emgParitySet)
+	{
+		ui.emg_start_serialPort_button->setEnabled(false);
+		ui.emg_stop_serialPort_button->setEnabled(true);
+	}
+	EMG_Thread->start();
+}
 void QCplot::on_stop_serialPort_button_clicked()
 {
 	serialPort->close();
 	ui.start_serialPort_button->setEnabled(true);
 	ui.stop_serialPort_button->setEnabled(false);
 }
+void QCplot::on_emg_stop_serialPort_button_clicked()
+{
+	emgSerialPort->close();
+	ui.emg_start_serialPort_button->setEnabled(true);
+	ui.emg_stop_serialPort_button->setEnabled(false);
+}
 void QCplot::setPortName()
 {
 	QVariant data = ui.serialPort_comboBox->currentText();
 	ui.receiveWindow->append(data.toString() + "\n");
 	serialPort->setPortName(data.toString());
+}
+void QCplot::setEmgPortName()
+{
+	QVariant data = ui.emg_serialPort_comboBox->currentText();
+	ui.emg_receiveWindow->append(data.toString() + "\n");
+	emgSerialPort->setPortName(data.toString());
 }
 bool QCplot::setBaudRate()
 {
@@ -3936,6 +4118,17 @@ bool QCplot::setBaudRate()
 	}
 	return baudSet;
 }
+bool QCplot::setEmgBaudRate()
+{
+	QVariant data = ui.emg_baud_comboBox->currentText();
+	ui.emg_receiveWindow->append(data.toString() + "\n");
+	bool baudSet = emgSerialPort->setBaudRate(data.toInt());
+	if (baudSet == false)
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("波特率失败") + "\n");
+	else
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("波特率设置为") + data.toString() + "\n");
+	return baudSet;
+}
 bool QCplot::setDataBits()
 {
 	QVariant data = ui.dataBits_comboBox->currentText();
@@ -3952,6 +4145,17 @@ bool QCplot::setDataBits()
 	}
 	return dataBitsSet;
 }
+bool QCplot::setEmgDataBits()
+{
+	QVariant data = ui.emg_dataBits_comboBox->currentText();
+	QSerialPort::DataBits emgDataBits = dataBitsMap[data.toInt()];
+	bool emgDataBitsSet = emgSerialPort->setDataBits(emgDataBits);
+	if (emgDataBitsSet == false)
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("数据位设置失败") + "\n");
+	else
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("数据为设置为") + data.toString() + "\n");
+	return emgDataBitsSet;
+}
 bool QCplot::setParity()
 {
 	QVariant data = ui.verify_comboBox->currentText();
@@ -3967,6 +4171,17 @@ bool QCplot::setParity()
 	}
 	return paritySet;
 }
+bool QCplot::setEmgParity()
+{
+	QVariant data = ui.emg_verify_comboBox->currentText();
+	QSerialPort::Parity parity = parityMap[data.toString().toStdString()];
+	bool emgParitySet = emgSerialPort->setParity(parity);
+	if (emgParitySet == false)
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("奇偶校验设置位失败") + "\n");
+	else
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("奇偶校验位设置为") + data.toString() + "\n");
+	return emgParitySet;
+}
 bool QCplot::setStopBits()
 {
 	QVariant data = ui.stopBit_comboBox->currentText();
@@ -3980,7 +4195,18 @@ bool QCplot::setStopBits()
 	{
 		ui.receiveWindow->append(QString::fromLocal8Bit("停止位设置为") + data.toString() + "\n");
 	}
-	return stopBits;
+	return stopBitsSet;
+}
+bool QCplot::setEmgStopBits()
+{
+	QVariant data = ui.emg_stopBit_comboBox->currentText();
+	QSerialPort::StopBits stopBits = stopBitsMap[data.toFloat()];
+	bool emgStopBitsSet = serialPort->setStopBits(stopBits);
+	if (emgStopBitsSet == false)
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("停止位设置失败") + "\n");
+	else
+		ui.emg_receiveWindow->append(QString::fromLocal8Bit("停止位设置为") + data.toString() + "\n");
+	return emgStopBitsSet;
 }
 void QCplot::receiveChangeState(bool checkFlag)
 {
@@ -4172,9 +4398,23 @@ void QCplot::dispalySerialData()
 		receiveMsg = IMU_Thread->receiveBuffer;
 	ui.receiveWindow->append(receiveMsg);
 }
+void QCplot::displayEMGSerialData()
+{
+	QString receiveMsg;
+	if (isReceiveHex)
+		receiveMsg = ByteArrayToHexStr(EMG_Thread->receiveBuffer);
+	else
+		receiveMsg = EMG_Thread->receiveBuffer;
+	ui.emg_receiveWindow->append(receiveMsg);
+}
 void QCplot::updateIMUImage()
 {
 	this->showIMUImage();
 	this->showIMUImage_2();
 	this->showIMUImage_3();
+}
+void QCplot::updateEMGImage()
+{
+	this->showEMGImage_1();
+	//qDebug() << "in" << endl;
 }

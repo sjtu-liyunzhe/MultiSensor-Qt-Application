@@ -42,7 +42,7 @@ void IMUProcesser::dataSave(QByteArray buffer)
 }
 void IMUProcesser::dataUnpackage()
 {
-	int16_t tempRoll = 0, tempPitch = 0, tempYaw = 0;
+	float tempRoll = 0, tempPitch = 0, tempYaw = 0;
 	unsigned char rollHigh = 0, rollLow = 0, pitchHigh = 0, pitchLow = 0, yawHigh = 0, yawLow = 0;
 	int channel = 0;
 	if (IMUSerialPortBuffer[0].operator == (0x88))
@@ -63,9 +63,9 @@ void IMUProcesser::dataUnpackage()
 			yawHigh = IMUSerialPortBuffer[19];
 			yawHigh = IMUSerialPortBuffer[20];
 			
-			tempRoll = ((rollHigh << 8) | rollLow) / 100;
-			tempPitch = ((pitchHigh << 8) | pitchLow) / 100;
-			tempYaw = ((yawHigh << 8) | yawLow) / 100;
+			tempRoll = float(int16_t((rollHigh << 8) | rollLow)) / 100;
+			tempPitch = float(int16_t((pitchHigh << 8)) | pitchLow) / 100;
+			tempYaw = float(int16_t((yawHigh << 8) | yawLow)) / 100;
 
 			if (IMUSerialPortBuffer[1].operator== (0xA1))
 			{
@@ -83,9 +83,9 @@ void IMUProcesser::dataUnpackage()
 			{
 				channel = 3;
 			}
-			imuBuffer->array[channel][0].push(tempRoll);
-			imuBuffer->array[channel][1].push(tempPitch);
-			imuBuffer->array[channel][2].push(tempYaw);
+			imuBuffer->array[channel][0].push(double(tempRoll));
+			imuBuffer->array[channel][1].push(double(tempPitch));
+			imuBuffer->array[channel][2].push(double(tempYaw));
 			//qDebug() << tempRoll << endl;
 		}
 	}

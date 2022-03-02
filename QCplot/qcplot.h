@@ -39,6 +39,7 @@
 #include <QHash>
 #include <QDebug>
 #include "IMUProcesser.h"
+#include "EMGProcesser.h"
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -237,9 +238,24 @@ private:
 	QString ByteArrayToHexStr(QByteArray data);
 	
 
-	IMUProcesser* IMU_Thread;
+	// EMG串口
+	QSerialPort* emgSerialPort;
+	QSerialPortInfo* emgSerialPortInfo;
+	QList<QSerialPortInfo> emgSerialList;
+	bool isEmgSerialPortOpen;
+	bool isEmgReceiveHex;
+	void emgSerialPortInit();
+	void getEmgExistingSerialPort();
+	void setEmgPortName();
+	bool setEmgBaudRate();
+	bool setEmgDataBits();
+	bool setEmgParity();
+	bool setEmgStopBits();
 
-	// 串口解包
+	IMUProcesser* IMU_Thread;
+	EMGProcesser* EMG_Thread;
+
+	// IMU串口解包
 	QVector <double> IMU_x, IMU_y;
 	void showIMUImage();
 	void showIMUImage_2();
@@ -270,6 +286,16 @@ private:
 	//std::vector<float> IMUDataPackage[4][3];
 
 	int key_IMU_1, key_IMU_2, key_IMU_3, key_IMU_4;
+
+	// EMG串口解包
+	QVector<double> EMG_x, EMG_y;
+	int EMG_Datalength;
+	void showEMGImage_1();
+	void showEMGImage_2();
+	void showEMGImage_3();
+	void showEMGImage_4();
+	int key_EMG_1, key_EMG_2, key_EMG_3, key_EMG_4;
+
 	
 public:
 	void initial();
@@ -383,6 +409,11 @@ private slots:
 	void receiveChangeState(bool checkFlag);
 	void dispalySerialData();
 	void updateIMUImage();
+	// EMG串口
+	void on_emg_start_serialPort_button_clicked();
+	void on_emg_stop_serialPort_button_clicked();
+	void displayEMGSerialData();
+	void updateEMGImage();
 
 	
 
