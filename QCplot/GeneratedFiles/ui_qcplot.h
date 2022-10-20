@@ -220,6 +220,8 @@ public:
     QPushButton *emg_stop_serialPort_button;
     QCheckBox *emg_hex_checkBox;
     QPushButton *emg_clear_button;
+    QPushButton *clearData_button;
+    QPushButton *saveData_button;
     QGroupBox *groupBox_6;
     QTextBrowser *emg_receiveWindow;
     QWidget *layoutWidget_7;
@@ -251,6 +253,67 @@ public:
     QLabel *Amode_label;
     QLabel *EMG_label;
     QLabel *IMU_label;
+    QGroupBox *groupBox_8;
+    QPushButton *multiData_connect;
+    QPushButton *multiData_start_button;
+    QPushButton *multiData_stop_button;
+    QPushButton *multiData_capture_button;
+    QWidget *Discrete;
+    QGroupBox *groupBox_3;
+    QWidget *disGesture_widget_1;
+    QWidget *horizontalLayoutWidget;
+    QHBoxLayout *disGesture_layout_1;
+    QWidget *disGesture_widget_2;
+    QWidget *horizontalLayoutWidget_2;
+    QHBoxLayout *disGesture_layout_2;
+    QWidget *disGesture_widget_3;
+    QWidget *horizontalLayoutWidget_3;
+    QHBoxLayout *disGesture_layout_3;
+    QWidget *disGesture_widget_4;
+    QWidget *horizontalLayoutWidget_4;
+    QHBoxLayout *disGesture_layout_4;
+    QWidget *disGesture_widget_5;
+    QWidget *horizontalLayoutWidget_5;
+    QHBoxLayout *disGesture_layout_5;
+    QWidget *disGesture_widget_6;
+    QWidget *horizontalLayoutWidget_6;
+    QHBoxLayout *disGesture_layout_6;
+    QProgressBar *disGesture_progressBar_1;
+    QWidget *disGesture_widget_7;
+    QWidget *horizontalLayoutWidget_9;
+    QHBoxLayout *disGesture_layout_8;
+    QWidget *disGesture_widget_9;
+    QWidget *horizontalLayoutWidget_10;
+    QHBoxLayout *disGesture_layout_9;
+    QWidget *disGesture_widget_10;
+    QWidget *horizontalLayoutWidget_11;
+    QHBoxLayout *disGesture_layout_10;
+    QWidget *disGesture_widget_11;
+    QWidget *horizontalLayoutWidget_12;
+    QHBoxLayout *disGesture_layout_11;
+    QGroupBox *groupBox_4;
+    QLabel *label;
+    QWidget *disGesture_widget_result;
+    QWidget *horizontalLayoutWidget_7;
+    QHBoxLayout *disGesture_layout_result;
+    QTextBrowser *textBrowser;
+    QGroupBox *groupBox_7;
+    QWidget *layoutWidget4;
+    QGridLayout *gridLayout_8;
+    QCustomPlot *disGesture_IMU_plot;
+    QCustomPlot *disGesture_EMG_plot;
+    QCustomPlot *disGesture_Amode_plot;
+    QWidget *widget_2;
+    QComboBox *disGesture_Amode_comboBox;
+    QComboBox *disGesture_EMG_comboBox;
+    QComboBox *disGesture_IMU_comboBox;
+    QPushButton *disGesture_start_button;
+    QPushButton *disGesture_stop_button;
+    QPushButton *disGesture_train_button;
+    QPushButton *disGesture_predict_button;
+    QPushButton *disGesture_clear_button;
+    QPushButton *disGesture_save_button;
+    QPushButton *disGesture_parameters_button;
     QMenuBar *menuBar;
     QMenu *menuSetting;
     QToolBar *mainToolBar;
@@ -260,7 +323,7 @@ public:
     {
         if (QCplotClass->objectName().isEmpty())
             QCplotClass->setObjectName(QStringLiteral("QCplotClass"));
-        QCplotClass->resize(1130, 928);
+        QCplotClass->resize(1315, 905);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -1322,6 +1385,12 @@ public:
 
         verticalLayout_13->addWidget(emg_clear_button);
 
+        clearData_button = new QPushButton(groupBox_5);
+        clearData_button->setObjectName(QStringLiteral("clearData_button"));
+        clearData_button->setGeometry(QRect(10, 340, 93, 28));
+        saveData_button = new QPushButton(groupBox_5);
+        saveData_button->setObjectName(QStringLiteral("saveData_button"));
+        saveData_button->setGeometry(QRect(130, 340, 93, 28));
         groupBox_6 = new QGroupBox(EMGPort);
         groupBox_6->setObjectName(QStringLiteral("groupBox_6"));
         groupBox_6->setGeometry(QRect(0, 13, 751, 811));
@@ -1429,6 +1498,7 @@ public:
 
         IMU_2_plot = new QCustomPlot(layoutWidget2);
         IMU_2_plot->setObjectName(QStringLiteral("IMU_2_plot"));
+        IMU_1_plot->raise();
 
         verticalLayout_7->addWidget(IMU_2_plot);
 
@@ -1447,7 +1517,7 @@ public:
 
         layoutWidget3 = new QWidget(MutiData);
         layoutWidget3->setObjectName(QStringLiteral("layoutWidget3"));
-        layoutWidget3->setGeometry(QRect(10, 10, 1091, 22));
+        layoutWidget3->setGeometry(QRect(10, 10, 1091, 31));
         horizontalLayout_8 = new QHBoxLayout(layoutWidget3);
         horizontalLayout_8->setSpacing(6);
         horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
@@ -1472,14 +1542,263 @@ public:
 
         horizontalLayout_8->addWidget(IMU_label);
 
+        groupBox_8 = new QGroupBox(MutiData);
+        groupBox_8->setObjectName(QStringLiteral("groupBox_8"));
+        groupBox_8->setGeometry(QRect(1109, 9, 171, 311));
+        multiData_connect = new QPushButton(groupBox_8);
+        multiData_connect->setObjectName(QStringLiteral("multiData_connect"));
+        multiData_connect->setGeometry(QRect(40, 10, 93, 28));
+        multiData_start_button = new QPushButton(groupBox_8);
+        multiData_start_button->setObjectName(QStringLiteral("multiData_start_button"));
+        multiData_start_button->setGeometry(QRect(40, 70, 93, 28));
+        multiData_stop_button = new QPushButton(groupBox_8);
+        multiData_stop_button->setObjectName(QStringLiteral("multiData_stop_button"));
+        multiData_stop_button->setEnabled(false);
+        multiData_stop_button->setGeometry(QRect(40, 130, 93, 28));
+        multiData_capture_button = new QPushButton(groupBox_8);
+        multiData_capture_button->setObjectName(QStringLiteral("multiData_capture_button"));
+        multiData_capture_button->setGeometry(QRect(40, 200, 93, 28));
         tabWidget->addTab(MutiData, QString());
+        line->raise();
+        line_2->raise();
+        layoutWidget->raise();
+        layoutWidget->raise();
+        groupBox_8->raise();
+        Discrete = new QWidget();
+        Discrete->setObjectName(QStringLiteral("Discrete"));
+        groupBox_3 = new QGroupBox(Discrete);
+        groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
+        groupBox_3->setGeometry(QRect(11, 11, 1271, 321));
+        disGesture_widget_1 = new QWidget(groupBox_3);
+        disGesture_widget_1->setObjectName(QStringLiteral("disGesture_widget_1"));
+        disGesture_widget_1->setGeometry(QRect(10, 50, 120, 200));
+        horizontalLayoutWidget = new QWidget(disGesture_widget_1);
+        horizontalLayoutWidget->setObjectName(QStringLiteral("horizontalLayoutWidget"));
+        horizontalLayoutWidget->setGeometry(QRect(-1, 0, 121, 201));
+        disGesture_layout_1 = new QHBoxLayout(horizontalLayoutWidget);
+        disGesture_layout_1->setSpacing(6);
+        disGesture_layout_1->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_1->setObjectName(QStringLiteral("disGesture_layout_1"));
+        disGesture_layout_1->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_2 = new QWidget(groupBox_3);
+        disGesture_widget_2->setObjectName(QStringLiteral("disGesture_widget_2"));
+        disGesture_widget_2->setGeometry(QRect(135, 50, 120, 200));
+        horizontalLayoutWidget_2 = new QWidget(disGesture_widget_2);
+        horizontalLayoutWidget_2->setObjectName(QStringLiteral("horizontalLayoutWidget_2"));
+        horizontalLayoutWidget_2->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_2 = new QHBoxLayout(horizontalLayoutWidget_2);
+        disGesture_layout_2->setSpacing(6);
+        disGesture_layout_2->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_2->setObjectName(QStringLiteral("disGesture_layout_2"));
+        disGesture_layout_2->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_3 = new QWidget(groupBox_3);
+        disGesture_widget_3->setObjectName(QStringLiteral("disGesture_widget_3"));
+        disGesture_widget_3->setGeometry(QRect(260, 50, 120, 200));
+        horizontalLayoutWidget_3 = new QWidget(disGesture_widget_3);
+        horizontalLayoutWidget_3->setObjectName(QStringLiteral("horizontalLayoutWidget_3"));
+        horizontalLayoutWidget_3->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_3 = new QHBoxLayout(horizontalLayoutWidget_3);
+        disGesture_layout_3->setSpacing(6);
+        disGesture_layout_3->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_3->setObjectName(QStringLiteral("disGesture_layout_3"));
+        disGesture_layout_3->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_4 = new QWidget(groupBox_3);
+        disGesture_widget_4->setObjectName(QStringLiteral("disGesture_widget_4"));
+        disGesture_widget_4->setGeometry(QRect(385, 50, 120, 200));
+        horizontalLayoutWidget_4 = new QWidget(disGesture_widget_4);
+        horizontalLayoutWidget_4->setObjectName(QStringLiteral("horizontalLayoutWidget_4"));
+        horizontalLayoutWidget_4->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_4 = new QHBoxLayout(horizontalLayoutWidget_4);
+        disGesture_layout_4->setSpacing(6);
+        disGesture_layout_4->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_4->setObjectName(QStringLiteral("disGesture_layout_4"));
+        disGesture_layout_4->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_5 = new QWidget(groupBox_3);
+        disGesture_widget_5->setObjectName(QStringLiteral("disGesture_widget_5"));
+        disGesture_widget_5->setGeometry(QRect(510, 50, 120, 200));
+        horizontalLayoutWidget_5 = new QWidget(disGesture_widget_5);
+        horizontalLayoutWidget_5->setObjectName(QStringLiteral("horizontalLayoutWidget_5"));
+        horizontalLayoutWidget_5->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_5 = new QHBoxLayout(horizontalLayoutWidget_5);
+        disGesture_layout_5->setSpacing(6);
+        disGesture_layout_5->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_5->setObjectName(QStringLiteral("disGesture_layout_5"));
+        disGesture_layout_5->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_6 = new QWidget(groupBox_3);
+        disGesture_widget_6->setObjectName(QStringLiteral("disGesture_widget_6"));
+        disGesture_widget_6->setGeometry(QRect(635, 50, 120, 200));
+        horizontalLayoutWidget_6 = new QWidget(disGesture_widget_6);
+        horizontalLayoutWidget_6->setObjectName(QStringLiteral("horizontalLayoutWidget_6"));
+        horizontalLayoutWidget_6->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_6 = new QHBoxLayout(horizontalLayoutWidget_6);
+        disGesture_layout_6->setSpacing(6);
+        disGesture_layout_6->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_6->setObjectName(QStringLiteral("disGesture_layout_6"));
+        disGesture_layout_6->setContentsMargins(0, 0, 0, 0);
+        disGesture_progressBar_1 = new QProgressBar(groupBox_3);
+        disGesture_progressBar_1->setObjectName(QStringLiteral("disGesture_progressBar_1"));
+        disGesture_progressBar_1->setGeometry(QRect(40, 270, 1181, 23));
+        disGesture_progressBar_1->setValue(0);
+        disGesture_widget_7 = new QWidget(groupBox_3);
+        disGesture_widget_7->setObjectName(QStringLiteral("disGesture_widget_7"));
+        disGesture_widget_7->setGeometry(QRect(760, 50, 120, 200));
+        horizontalLayoutWidget_9 = new QWidget(disGesture_widget_7);
+        horizontalLayoutWidget_9->setObjectName(QStringLiteral("horizontalLayoutWidget_9"));
+        horizontalLayoutWidget_9->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_8 = new QHBoxLayout(horizontalLayoutWidget_9);
+        disGesture_layout_8->setSpacing(6);
+        disGesture_layout_8->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_8->setObjectName(QStringLiteral("disGesture_layout_8"));
+        disGesture_layout_8->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_9 = new QWidget(groupBox_3);
+        disGesture_widget_9->setObjectName(QStringLiteral("disGesture_widget_9"));
+        disGesture_widget_9->setGeometry(QRect(885, 50, 120, 200));
+        horizontalLayoutWidget_10 = new QWidget(disGesture_widget_9);
+        horizontalLayoutWidget_10->setObjectName(QStringLiteral("horizontalLayoutWidget_10"));
+        horizontalLayoutWidget_10->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_9 = new QHBoxLayout(horizontalLayoutWidget_10);
+        disGesture_layout_9->setSpacing(6);
+        disGesture_layout_9->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_9->setObjectName(QStringLiteral("disGesture_layout_9"));
+        disGesture_layout_9->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_10 = new QWidget(groupBox_3);
+        disGesture_widget_10->setObjectName(QStringLiteral("disGesture_widget_10"));
+        disGesture_widget_10->setGeometry(QRect(1010, 50, 120, 200));
+        horizontalLayoutWidget_11 = new QWidget(disGesture_widget_10);
+        horizontalLayoutWidget_11->setObjectName(QStringLiteral("horizontalLayoutWidget_11"));
+        horizontalLayoutWidget_11->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_10 = new QHBoxLayout(horizontalLayoutWidget_11);
+        disGesture_layout_10->setSpacing(6);
+        disGesture_layout_10->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_10->setObjectName(QStringLiteral("disGesture_layout_10"));
+        disGesture_layout_10->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_11 = new QWidget(groupBox_3);
+        disGesture_widget_11->setObjectName(QStringLiteral("disGesture_widget_11"));
+        disGesture_widget_11->setGeometry(QRect(1135, 50, 120, 200));
+        horizontalLayoutWidget_12 = new QWidget(disGesture_widget_11);
+        horizontalLayoutWidget_12->setObjectName(QStringLiteral("horizontalLayoutWidget_12"));
+        horizontalLayoutWidget_12->setGeometry(QRect(0, 0, 121, 201));
+        disGesture_layout_11 = new QHBoxLayout(horizontalLayoutWidget_12);
+        disGesture_layout_11->setSpacing(6);
+        disGesture_layout_11->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_11->setObjectName(QStringLiteral("disGesture_layout_11"));
+        disGesture_layout_11->setContentsMargins(0, 0, 0, 0);
+        disGesture_widget_10->raise();
+        disGesture_widget_1->raise();
+        disGesture_widget_2->raise();
+        disGesture_widget_3->raise();
+        disGesture_widget_4->raise();
+        disGesture_widget_5->raise();
+        disGesture_widget_6->raise();
+        disGesture_progressBar_1->raise();
+        disGesture_widget_7->raise();
+        disGesture_widget_9->raise();
+        disGesture_widget_11->raise();
+        groupBox_4 = new QGroupBox(Discrete);
+        groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
+        groupBox_4->setGeometry(QRect(10, 360, 170, 441));
+        label = new QLabel(groupBox_4);
+        label->setObjectName(QStringLiteral("label"));
+        label->setGeometry(QRect(50, 20, 72, 15));
+        disGesture_widget_result = new QWidget(groupBox_4);
+        disGesture_widget_result->setObjectName(QStringLiteral("disGesture_widget_result"));
+        disGesture_widget_result->setGeometry(QRect(10, 80, 150, 200));
+        horizontalLayoutWidget_7 = new QWidget(disGesture_widget_result);
+        horizontalLayoutWidget_7->setObjectName(QStringLiteral("horizontalLayoutWidget_7"));
+        horizontalLayoutWidget_7->setGeometry(QRect(0, 0, 151, 201));
+        disGesture_layout_result = new QHBoxLayout(horizontalLayoutWidget_7);
+        disGesture_layout_result->setSpacing(6);
+        disGesture_layout_result->setContentsMargins(11, 11, 11, 11);
+        disGesture_layout_result->setObjectName(QStringLiteral("disGesture_layout_result"));
+        disGesture_layout_result->setContentsMargins(0, 0, 0, 0);
+        textBrowser = new QTextBrowser(groupBox_4);
+        textBrowser->setObjectName(QStringLiteral("textBrowser"));
+        textBrowser->setGeometry(QRect(10, 330, 151, 81));
+        groupBox_7 = new QGroupBox(Discrete);
+        groupBox_7->setObjectName(QStringLiteral("groupBox_7"));
+        groupBox_7->setGeometry(QRect(199, 359, 751, 441));
+        layoutWidget4 = new QWidget(groupBox_7);
+        layoutWidget4->setObjectName(QStringLiteral("layoutWidget4"));
+        layoutWidget4->setGeometry(QRect(10, 10, 731, 421));
+        gridLayout_8 = new QGridLayout(layoutWidget4);
+        gridLayout_8->setSpacing(6);
+        gridLayout_8->setContentsMargins(11, 11, 11, 11);
+        gridLayout_8->setObjectName(QStringLiteral("gridLayout_8"));
+        gridLayout_8->setContentsMargins(0, 0, 0, 0);
+        disGesture_IMU_plot = new QCustomPlot(layoutWidget4);
+        disGesture_IMU_plot->setObjectName(QStringLiteral("disGesture_IMU_plot"));
+
+        gridLayout_8->addWidget(disGesture_IMU_plot, 1, 0, 1, 1);
+
+        disGesture_EMG_plot = new QCustomPlot(layoutWidget4);
+        disGesture_EMG_plot->setObjectName(QStringLiteral("disGesture_EMG_plot"));
+
+        gridLayout_8->addWidget(disGesture_EMG_plot, 0, 1, 1, 1);
+
+        disGesture_Amode_plot = new QCustomPlot(layoutWidget4);
+        disGesture_Amode_plot->setObjectName(QStringLiteral("disGesture_Amode_plot"));
+
+        gridLayout_8->addWidget(disGesture_Amode_plot, 0, 0, 1, 1);
+
+        widget_2 = new QWidget(layoutWidget4);
+        widget_2->setObjectName(QStringLiteral("widget_2"));
+        disGesture_Amode_comboBox = new QComboBox(widget_2);
+        disGesture_Amode_comboBox->setObjectName(QStringLiteral("disGesture_Amode_comboBox"));
+        disGesture_Amode_comboBox->setGeometry(QRect(90, 20, 181, 22));
+        disGesture_EMG_comboBox = new QComboBox(widget_2);
+        disGesture_EMG_comboBox->setObjectName(QStringLiteral("disGesture_EMG_comboBox"));
+        disGesture_EMG_comboBox->setGeometry(QRect(90, 90, 181, 22));
+        disGesture_IMU_comboBox = new QComboBox(widget_2);
+        disGesture_IMU_comboBox->setObjectName(QStringLiteral("disGesture_IMU_comboBox"));
+        disGesture_IMU_comboBox->setGeometry(QRect(90, 160, 181, 22));
+
+        gridLayout_8->addWidget(widget_2, 1, 1, 1, 1);
+
+        disGesture_start_button = new QPushButton(Discrete);
+        disGesture_start_button->setObjectName(QStringLiteral("disGesture_start_button"));
+        disGesture_start_button->setGeometry(QRect(1030, 430, 93, 28));
+        disGesture_stop_button = new QPushButton(Discrete);
+        disGesture_stop_button->setObjectName(QStringLiteral("disGesture_stop_button"));
+        disGesture_stop_button->setEnabled(false);
+        disGesture_stop_button->setGeometry(QRect(1030, 640, 93, 28));
+        disGesture_train_button = new QPushButton(Discrete);
+        disGesture_train_button->setObjectName(QStringLiteral("disGesture_train_button"));
+        disGesture_train_button->setEnabled(false);
+        disGesture_train_button->setGeometry(QRect(1030, 500, 93, 28));
+        disGesture_predict_button = new QPushButton(Discrete);
+        disGesture_predict_button->setObjectName(QStringLiteral("disGesture_predict_button"));
+        disGesture_predict_button->setEnabled(false);
+        disGesture_predict_button->setGeometry(QRect(1030, 570, 93, 28));
+        disGesture_clear_button = new QPushButton(Discrete);
+        disGesture_clear_button->setObjectName(QStringLiteral("disGesture_clear_button"));
+        disGesture_clear_button->setEnabled(true);
+        disGesture_clear_button->setGeometry(QRect(1030, 710, 93, 28));
+        disGesture_save_button = new QPushButton(Discrete);
+        disGesture_save_button->setObjectName(QStringLiteral("disGesture_save_button"));
+        disGesture_save_button->setEnabled(true);
+        disGesture_save_button->setGeometry(QRect(1030, 780, 93, 28));
+        disGesture_parameters_button = new QPushButton(Discrete);
+        disGesture_parameters_button->setObjectName(QStringLiteral("disGesture_parameters_button"));
+        disGesture_parameters_button->setGeometry(QRect(1030, 360, 93, 28));
+        tabWidget->addTab(Discrete, QString());
+        groupBox_3->raise();
+        groupBox_4->raise();
+        groupBox_7->raise();
+        disGesture_start_button->raise();
+        disGesture_stop_button->raise();
+        disGesture_train_button->raise();
+        disGesture_predict_button->raise();
+        disGesture_clear_button->raise();
+        disGesture_save_button->raise();
+        disGesture_parameters_button->raise();
+        horizontalLayoutWidget_9->raise();
 
         horizontalLayout_2->addWidget(tabWidget);
 
         QCplotClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(QCplotClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1130, 26));
+        menuBar->setGeometry(QRect(0, 0, 1315, 23));
         menuSetting = new QMenu(menuBar);
         menuSetting->setObjectName(QStringLiteral("menuSetting"));
         menuSetting->setStyleSheet(QStringLiteral("font: 12pt \"Times New Roman\";"));
@@ -1693,13 +2012,53 @@ public:
         emg_stop_serialPort_button->setText(QApplication::translate("QCplotClass", "\345\205\263\351\227\255\344\270\262\345\217\243", 0));
         emg_hex_checkBox->setText(QApplication::translate("QCplotClass", "HEX", 0));
         emg_clear_button->setText(QApplication::translate("QCplotClass", "\346\270\205\351\231\244\346\216\245\346\224\266", 0));
+        clearData_button->setText(QApplication::translate("QCplotClass", "Claer", 0));
+        saveData_button->setText(QApplication::translate("QCplotClass", "Save", 0));
         groupBox_6->setTitle(QString());
         emg_serialSend_button->setText(QApplication::translate("QCplotClass", "\345\217\221\351\200\201", 0));
         tabWidget->setTabText(tabWidget->indexOf(EMGPort), QApplication::translate("QCplotClass", "EMGPort", 0));
         Amode_label->setText(QApplication::translate("QCplotClass", "A\350\266\205\344\277\241\345\217\267", 0));
         EMG_label->setText(QApplication::translate("QCplotClass", "EMG\344\277\241\345\217\267", 0));
         IMU_label->setText(QApplication::translate("QCplotClass", "IMU\344\277\241\345\217\267", 0));
+        groupBox_8->setTitle(QString());
+        multiData_connect->setText(QApplication::translate("QCplotClass", "Connect", 0));
+        multiData_start_button->setText(QApplication::translate("QCplotClass", "Start", 0));
+        multiData_stop_button->setText(QApplication::translate("QCplotClass", "Stop", 0));
+        multiData_capture_button->setText(QApplication::translate("QCplotClass", "Capture", 0));
         tabWidget->setTabText(tabWidget->indexOf(MutiData), QApplication::translate("QCplotClass", "Data", 0));
+        groupBox_3->setTitle(QString());
+        groupBox_4->setTitle(QString());
+        label->setText(QApplication::translate("QCplotClass", "Result", 0));
+        groupBox_7->setTitle(QString());
+        disGesture_Amode_comboBox->clear();
+        disGesture_Amode_comboBox->insertItems(0, QStringList()
+         << QApplication::translate("QCplotClass", "A-mode Channel 1", 0)
+         << QApplication::translate("QCplotClass", "A-mode Channel 2", 0)
+         << QApplication::translate("QCplotClass", "A-mode Channel 3", 0)
+         << QApplication::translate("QCplotClass", "A-mode Channel 4", 0)
+        );
+        disGesture_EMG_comboBox->clear();
+        disGesture_EMG_comboBox->insertItems(0, QStringList()
+         << QApplication::translate("QCplotClass", "EMG Channel 1", 0)
+         << QApplication::translate("QCplotClass", "EMG Channel 2", 0)
+         << QApplication::translate("QCplotClass", "EMG Channel 3", 0)
+         << QApplication::translate("QCplotClass", "EMG Channel 4", 0)
+        );
+        disGesture_IMU_comboBox->clear();
+        disGesture_IMU_comboBox->insertItems(0, QStringList()
+         << QApplication::translate("QCplotClass", "IMU Channel 1", 0)
+         << QApplication::translate("QCplotClass", "IMU Channel 2", 0)
+         << QApplication::translate("QCplotClass", "IMU Channel 3", 0)
+         << QApplication::translate("QCplotClass", "IMU Channel 4", 0)
+        );
+        disGesture_start_button->setText(QApplication::translate("QCplotClass", "Start", 0));
+        disGesture_stop_button->setText(QApplication::translate("QCplotClass", "Stop", 0));
+        disGesture_train_button->setText(QApplication::translate("QCplotClass", "Train", 0));
+        disGesture_predict_button->setText(QApplication::translate("QCplotClass", "Predict", 0));
+        disGesture_clear_button->setText(QApplication::translate("QCplotClass", "Clear", 0));
+        disGesture_save_button->setText(QApplication::translate("QCplotClass", "Save", 0));
+        disGesture_parameters_button->setText(QApplication::translate("QCplotClass", "Parameters", 0));
+        tabWidget->setTabText(tabWidget->indexOf(Discrete), QApplication::translate("QCplotClass", "DisGesture", 0));
         menuSetting->setTitle(QApplication::translate("QCplotClass", "Setting", 0));
     } // retranslateUi
 

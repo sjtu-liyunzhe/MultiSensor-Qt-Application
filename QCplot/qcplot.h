@@ -8,6 +8,11 @@
 #include <Player.h>
 #include "LDA_Bayesian.h"
 #include "ui_qcplot.h"
+
+//#include "ui_parameters_window.h"
+#include "parameters_dialog.h"
+#include "ui_parameters_dialog.h"
+
 //opencv
 #include <ml.h>
 #include <time.h>
@@ -38,8 +43,10 @@
 #include <QList>
 #include <QHash>
 #include <QDebug>
+#include <QMap>
 #include "IMUProcesser.h"
 #include "EMGProcesser.h"
+#include <QTimer>
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -68,6 +75,11 @@
 //~ delsys sdk
 #include "Delsys_SDK.h"
 
+// ½âÂëÏà¹Ø
+#include "EMGDecoding/EMGfeature.h"
+#include "EMGDecoding/EMGTrain.h"
+#include "EMGDecoding/EMGPredict.h"
+#include "EMGDecoding/Point.h"
 
 class QCplot : public QMainWindow //,public Ui_QCplotClass
 {
@@ -87,7 +99,6 @@ private:
 	Mat train_feature_new;
 	Mat train_label;
 	
-
 	Mat rawData;
 	//normailization
 	Mat trainFeatureNormalize;
@@ -294,9 +305,60 @@ private:
 	void showEMGImage_2();
 	void showEMGImage_3();
 	void showEMGImage_4();
+	void showUnionIMUImage();
+	void showUnionIMUImage_2();
 	int key_EMG_1, key_EMG_2, key_EMG_3, key_EMG_4;
 
+	// A³¬Í¼Ïñ
+	QVector<double> dataX, dataY;
+	QMap<string, int> channelMap;
+	void showAmodeImage_1(std::vector<std::vector<double>> CurrentPackage);
+	void showAmodeImage_2();
+	void showAmodeImage_3();
+	void showAmodeImage_4();
 	
+	
+	// DisGesture
+	Parameters_dialog* parameters_window_disGesture;
+	void showTrainImage_disGesture();
+	vector<QLabel*> imageShowLabel_disGesture;
+	int classNum_disGesture;
+	vector<cv::String> disGestureName;
+	void showDisGestureDataImage(const int& EMGChannel, const int& IMUChannel);
+	void showDisGestureAmodeImage(const int& AmodeChannel);
+	QVector<double> Amode_Data_x, Amode_Data_y;
+	QVector<double> EMG_Data_x, EMG_Data_y;
+	QVector<double> IMU_Data_x, IMU_Data_y,
+					IMU_Roll_Data_x, IMU_Roll_Data_y,
+					IMU_Pitch_Data_x, IMU_Pitch_Data_y,
+					IMU_Yaw_Data_x, IMU_Yaw_Data_y;
+	bool dataTabFlag;
+	int packetNum_disGesture;
+	int trialNum_disGesture;
+	int holdTime_disGesture;
+	QFile qfSaveAmodeFile[4], qfSaveEMGFile[4], qfSaveIMUFile[4],
+		qfSaveAmodePacFile, qfSaveEMGPacFile, qfSaveIMUPacFile,
+		qfSaveEMGLabelFile[4];
+	vector<int> disGestureTrainOrder, disGesturePredictOrder;
+	int time_disGesturePredict, num_disGesturePredict, disGesturePredictTrial;
+	int timeWindow, strideWindow;
+	vector<vector<double>> EMG_predictData;
+	QString trainFileName;
+	kd::KDTree<FEATURE_LEN, int> KNN_model;
+	int EMGrealLabel, EMGpredictLabel;
+	deque<int> EMGpredictQue;
+	vector<QImage> disImgArr;
+	void showEMGpredictImg(int index);
+
+
+
+	void saveAmodeData_disGesture(std::vector<std::vector<double>> CurrentPackage);
+	//void saveEMGData_disGesture(const std::vector<std::vector<double>>& vectorArray, const std::vector<uint8_t>& packageNumArray);
+	void saveEMGData_disGesture();
+	//void saveIMUData_disGesture(const std::vector<std::vector<std::vector<double>>>& vectorArray, const std::vector<uint8_t>& packageNumArray);
+	void saveIMUData_disGesture();
+	void saveEMGLabel_disGesture();
+
 public:
 	void initial();
 	void gettime();
@@ -338,7 +400,9 @@ public:
 	void close_engine();
 	bool engine_is_open;
 
-		
+	QTimer refreshTime;
+	int showCount;
+	vector<vector<vector<double>::size_type>> emgLabel;
 
 	
 private:
@@ -413,10 +477,27 @@ private slots:
 	void on_emg_start_serialPort_button_clicked();
 	void on_emg_stop_serialPort_button_clicked();
 	void displayEMGSerialData();
+
+	void on_emg_clear_button_clicked();
 	void updateEMGImage();
 
-	
+	// ³¬ÉùÍ¼Ïñ¸üÐÂ
+	void updateAmodeImage();
+	void on_saveData_button_clicked();
+	void on_clearData_button_clicked();
 
+	// disGesture
+	void on_disGesture_start_button_clicked();
+	void on_disGesture_train_button_clicked();
+	void on_disGesture_stop_button_clicked();
+	void on_disGesture_save_button_clicked();
+	void on_disGesture_clear_button_clicked();
+	void updateDisGetureDataImage();	// EMG + IMU
+	void updateDisGestureAmodeImage();
+	void getTrainFeature_disGesture();
+	void on_disGesture_predict_button_clicked();
+	void getPredictFeature_disGesture();
+	void on_disGesture_parameters_button_clicked();
 };
 
 #endif // QCPLOT_H

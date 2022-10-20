@@ -67,11 +67,20 @@ void Player::run()
 			{
 				emit trainImage_mode2();
 			}
+			else if (pstate == TRAIN_DisGesture)
+			{
+				emit trainImage_disDesture();
+			}
 			else if (pstate == PREDICT)
 			{
 				emit predictImage();
 			}
-			this->msleep(80);														
+			else if (pstate == PREDICT_DisGesture)
+			{
+				emit predictImage_disDesture();
+			}
+			//this->msleep(100);		// 为了适应肌电分窗设置的时间
+			this->msleep(10);
 			if (stop)
 			{
 				break;
@@ -103,6 +112,16 @@ void Player::threadTrain_mode2()
 {
 	//Train
 	pstate = TRAIN_mode2;
+}
+
+void Player::threadTrain_disDesture()
+{
+	pstate = TRAIN_DisGesture;
+}
+
+void Player::threadPredict_disDesture()
+{
+	pstate = PREDICT_DisGesture;
 }
 
 Player::processstate Player::getState()  

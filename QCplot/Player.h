@@ -8,11 +8,8 @@
 #include <fstream>
 #include<time.h>
 
-/*******************************************
-此类是一个线程，用于从B超设备中实时地
-提取图像，并且将图像实时发送给后续处理
-环节
-********************************************/
+// 管理设备使用状态的子线程
+// 根据不同状态执行不同阶段的程序
 class Player : public QThread
 {
 	Q_OBJECT
@@ -28,7 +25,14 @@ public:
 	void setStop();														
 	bool isStop() const;
 	enum processstate {
-		TRAIN, PREDICT, FREE, REST, TRAIN_mode1, TRAIN_mode2
+		TRAIN,
+		PREDICT,
+		FREE,
+		REST,
+		TRAIN_mode1,
+		TRAIN_mode2,
+		TRAIN_DisGesture,
+		PREDICT_DisGesture
 	};
 	processstate pstate;
 	processstate getState(); 
@@ -37,6 +41,9 @@ public:
 	void threadTrain_mode1();
 	//~ mode2
 	void threadTrain_mode2();
+	// disGesture
+	void threadTrain_disDesture();
+	void threadPredict_disDesture();
 
 private:
 	bool stop;
@@ -54,6 +61,10 @@ signals:
 
 	//~ mode2
 	void trainImage_mode2();
+
+	// disGesture
+	void trainImage_disDesture();
+	void predictImage_disDesture();
 
 protected:
 	void run();

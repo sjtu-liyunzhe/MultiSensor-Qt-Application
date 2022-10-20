@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1130</width>
-    <height>928</height>
+    <width>1315</width>
+    <height>905</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -2071,6 +2071,32 @@ background-color: rgb(226, 226, 226);</string>
           </item>
          </layout>
         </widget>
+        <widget class="QPushButton" name="clearData_button">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>340</y>
+           <width>93</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Claer</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="saveData_button">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>340</y>
+           <width>93</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Save</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox_6">
         <property name="geometry">
@@ -2177,7 +2203,9 @@ background-color: rgb(226, 226, 226);</string>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <widget class="QCustomPlot" name="EMG_1_plot" native="true"/>
+            <widget class="QCustomPlot" name="EMG_1_plot" native="true">
+             <zorder></zorder>
+            </widget>
            </item>
            <item>
             <widget class="QCustomPlot" name="EMG_3_plot" native="true"/>
@@ -2196,7 +2224,9 @@ background-color: rgb(226, 226, 226);</string>
             <widget class="QCustomPlot" name="IMU_1_plot" native="true"/>
            </item>
            <item>
-            <widget class="QCustomPlot" name="IMU_2_plot" native="true"/>
+            <widget class="QCustomPlot" name="IMU_2_plot" native="true">
+             <zorder>IMU_1_plot</zorder>
+            </widget>
            </item>
            <item>
             <widget class="QCustomPlot" name="IMU_3_plot" native="true"/>
@@ -2214,7 +2244,7 @@ background-color: rgb(226, 226, 226);</string>
           <x>10</x>
           <y>10</y>
           <width>1091</width>
-          <height>22</height>
+          <height>31</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -2253,6 +2283,635 @@ background-color: rgb(226, 226, 226);</string>
          </item>
         </layout>
        </widget>
+       <widget class="QGroupBox" name="groupBox_8">
+        <property name="geometry">
+         <rect>
+          <x>1109</x>
+          <y>9</y>
+          <width>171</width>
+          <height>311</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QPushButton" name="multiData_connect">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>10</y>
+           <width>93</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Connect</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="multiData_start_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>70</y>
+           <width>93</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Start</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="multiData_stop_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>130</y>
+           <width>93</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="multiData_capture_button">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>200</y>
+           <width>93</width>
+           <height>28</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Capture</string>
+         </property>
+        </widget>
+       </widget>
+       <zorder>line</zorder>
+       <zorder>line_2</zorder>
+       <zorder>layoutWidget</zorder>
+       <zorder>layoutWidget</zorder>
+       <zorder></zorder>
+       <zorder></zorder>
+       <zorder>groupBox_8</zorder>
+      </widget>
+      <widget class="QWidget" name="Discrete">
+       <attribute name="title">
+        <string>DisGesture</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="geometry">
+         <rect>
+          <x>11</x>
+          <y>11</y>
+          <width>1271</width>
+          <height>321</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QWidget" name="disGesture_widget_1" native="true">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>-1</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_1"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_2" native="true">
+         <property name="geometry">
+          <rect>
+           <x>135</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_3" native="true">
+         <property name="geometry">
+          <rect>
+           <x>260</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_3"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_4" native="true">
+         <property name="geometry">
+          <rect>
+           <x>385</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_4">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_4"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_5" native="true">
+         <property name="geometry">
+          <rect>
+           <x>510</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_5">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_5"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_6" native="true">
+         <property name="geometry">
+          <rect>
+           <x>635</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_6">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_6"/>
+         </widget>
+        </widget>
+        <widget class="QProgressBar" name="disGesture_progressBar_1">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>270</y>
+           <width>1181</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_7" native="true">
+         <property name="geometry">
+          <rect>
+           <x>760</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_9">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_8"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_9" native="true">
+         <property name="geometry">
+          <rect>
+           <x>885</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_10">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_9"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_10" native="true">
+         <property name="geometry">
+          <rect>
+           <x>1010</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_11">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_10"/>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_11" native="true">
+         <property name="geometry">
+          <rect>
+           <x>1135</x>
+           <y>50</y>
+           <width>120</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_12">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>121</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_11"/>
+         </widget>
+        </widget>
+        <zorder>disGesture_widget_10</zorder>
+        <zorder>disGesture_widget_1</zorder>
+        <zorder>disGesture_widget_2</zorder>
+        <zorder>disGesture_widget_3</zorder>
+        <zorder>disGesture_widget_4</zorder>
+        <zorder>disGesture_widget_5</zorder>
+        <zorder>disGesture_widget_6</zorder>
+        <zorder>disGesture_progressBar_1</zorder>
+        <zorder>disGesture_widget_7</zorder>
+        <zorder>disGesture_widget_9</zorder>
+        <zorder>disGesture_widget_11</zorder>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>360</y>
+          <width>170</width>
+          <height>441</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>20</y>
+           <width>72</width>
+           <height>15</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Result</string>
+         </property>
+        </widget>
+        <widget class="QWidget" name="disGesture_widget_result" native="true">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>150</width>
+           <height>200</height>
+          </rect>
+         </property>
+         <widget class="QWidget" name="horizontalLayoutWidget_7">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>151</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="disGesture_layout_result"/>
+         </widget>
+        </widget>
+        <widget class="QTextBrowser" name="textBrowser">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>330</y>
+           <width>151</width>
+           <height>81</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_7">
+        <property name="geometry">
+         <rect>
+          <x>199</x>
+          <y>359</y>
+          <width>751</width>
+          <height>441</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>731</width>
+           <height>421</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="1" column="0">
+           <widget class="QCustomPlot" name="disGesture_IMU_plot" native="true"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCustomPlot" name="disGesture_EMG_plot" native="true"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCustomPlot" name="disGesture_Amode_plot" native="true"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QWidget" name="widget_2" native="true">
+            <widget class="QComboBox" name="disGesture_Amode_comboBox">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>20</y>
+               <width>181</width>
+               <height>22</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>A-mode Channel 1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>A-mode Channel 2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>A-mode Channel 3</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>A-mode Channel 4</string>
+              </property>
+             </item>
+            </widget>
+            <widget class="QComboBox" name="disGesture_EMG_comboBox">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>90</y>
+               <width>181</width>
+               <height>22</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>EMG Channel 1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>EMG Channel 2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>EMG Channel 3</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>EMG Channel 4</string>
+              </property>
+             </item>
+            </widget>
+            <widget class="QComboBox" name="disGesture_IMU_comboBox">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>160</y>
+               <width>181</width>
+               <height>22</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>IMU Channel 1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>IMU Channel 2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>IMU Channel 3</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>IMU Channel 4</string>
+              </property>
+             </item>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QPushButton" name="disGesture_start_button">
+        <property name="geometry">
+         <rect>
+          <x>1030</x>
+          <y>430</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Start</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disGesture_stop_button">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>1030</x>
+          <y>640</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disGesture_train_button">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>1030</x>
+          <y>500</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Train</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disGesture_predict_button">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>1030</x>
+          <y>570</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Predict</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disGesture_clear_button">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>1030</x>
+          <y>710</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Clear</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disGesture_save_button">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>1030</x>
+          <y>780</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disGesture_parameters_button">
+        <property name="geometry">
+         <rect>
+          <x>1030</x>
+          <y>360</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Parameters</string>
+        </property>
+       </widget>
+       <zorder>groupBox_3</zorder>
+       <zorder>groupBox_4</zorder>
+       <zorder>groupBox_7</zorder>
+       <zorder>disGesture_start_button</zorder>
+       <zorder>disGesture_stop_button</zorder>
+       <zorder>disGesture_train_button</zorder>
+       <zorder>disGesture_predict_button</zorder>
+       <zorder>disGesture_clear_button</zorder>
+       <zorder>disGesture_save_button</zorder>
+       <zorder>disGesture_parameters_button</zorder>
+       <zorder>horizontalLayoutWidget_9</zorder>
       </widget>
      </widget>
     </item>
@@ -2263,8 +2922,8 @@ background-color: rgb(226, 226, 226);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1130</width>
-     <height>26</height>
+     <width>1315</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSetting">

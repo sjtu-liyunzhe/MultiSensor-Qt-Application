@@ -7,8 +7,8 @@
 #include <iostream>
 #include <fstream>
 #include <numeric>
-//#include "engine.h" //~ 该文件包含了matlab计算引擎API函数的说明和所需数据结构的定义
-//#include "matrix.h"
+#include "engine.h" //~ 该文件包含了matlab计算引擎API函数的说明和所需数据结构的定义
+#include "matrix.h"
 #include <QMovie>
 #include <QLabel>
 
@@ -412,8 +412,14 @@ QCplot::QCplot(QWidget *parent)
 	ui.setupUi(this);
 	Data_x.resize(997);
 	Data_y.resize(997);
+	dataX.resize(997);
+	dataY.resize(997);
 	IMU_x.resize(100);
 	IMU_y.resize(100);
+	for (int i = 0; i != 997; ++i)
+	{
+		Amode_Data_x.push_back(i);
+	}
 	//for calibration
 	capture = false;
 	calibration = false;
@@ -570,6 +576,19 @@ QCplot::QCplot(QWidget *parent)
 	EMG_Thread = new EMGProcesser(emgSerialPort);
 	EMG_Datalength = 8;
 	
+	// disGesture显示手势
+	showTrainImage_disGesture();
+	packetNum_disGesture = 0;
+	trialNum_disGesture = 2;
+	holdTime_disGesture = 10;
+	ui.disGesture_progressBar_1->setMinimum(0);
+	ui.disGesture_progressBar_1->setMaximum(frameRate * holdTime_disGesture * trialNum_disGesture * classNum_disGesture);
+	ui.disGesture_progressBar_1->setValue(0);
+
+	// 参数设置窗口
+	parameters_window_disGesture = new Parameters_dialog(this);
+	parameters_window_disGesture->ui->parameters_trainTime->setText(QString::number(holdTime_disGesture));
+	parameters_window_disGesture->holdTime = holdTime;
 } 
 
 
@@ -582,18 +601,21 @@ QCplot::~QCplot()
 void QCplot::initialSlots()
 {	
 	//调整为阻塞
-	QObject::connect(myPlayer,	SIGNAL(showImage()), this, SLOT(updatePlayerUI()),Qt::BlockingQueuedConnection);		// showImage是MyPlayer中的信号
+	//QObject::connect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(updatePlayerUI()), Qt::BlockingQueuedConnection);		// showImage是MyPlayer中的信号
+	//QObject::connect(myPlayer,	SIGNAL(showImage()), this, SLOT(updatePlayerUI()),Qt::BlockingQueuedConnection);		// showImage是MyPlayer中的信号
 	//QObject::connect(myPlayer,	SIGNAL(showImage(QImage)), this, SLOT(updatePlayerUI(QImage)),Qt::BlockingQueuedConnection);
-	QObject::connect(myPlayer,	SIGNAL(trainImage()), this, SLOT(getTrainFeatureC()),Qt::BlockingQueuedConnection);
+	//QObject::connect(myPlayer,	SIGNAL(trainImage()), this, SLOT(getTrainFeatureC()),Qt::BlockingQueuedConnection);
 	//QObject::connect(myPlayer,	SIGNAL(trainImage(QImage)), this, SLOT(getTrainFeatureC(QImage)),Qt::BlockingQueuedConnection);
-	QObject::connect(myPlayer,	SIGNAL(predictImage()), this, SLOT(getPredictFeatureC()),Qt::BlockingQueuedConnection);
+	//QObject::connect(myPlayer,	SIGNAL(predictImage()), this, SLOT(getPredictFeatureC()),Qt::BlockingQueuedConnection);
 	//QObject::connect(myPlayer,	SIGNAL(predictImage(QImage)),	this, SLOT(getPredictFeatureC(QImage)),Qt::BlockingQueuedConnection);
 	
 	//~ mode1
 	QObject::connect(myPlayer, SIGNAL(trainImage_mode1()), this, SLOT(getTrainFeature_mode1()), Qt::BlockingQueuedConnection);
 	//~ mode2
-	QObject::connect(myPlayer, SIGNAL(trainImage_mode2()), this, SLOT(getTrainFeature_mode2()), Qt::BlockingQueuedConnection);
-
+	//QObject::connect(myPlayer, SIGNAL(trainImage_mode2()), this, SLOT(getTrainFeature_mode2()), Qt::BlockingQueuedConnection);
+	// disGesture
+	QObject::connect(myPlayer, SIGNAL(trainImage_disDesture()), this, SLOT(getTrainFeature_disGesture()), Qt::BlockingQueuedConnection);
+	QObject::connect(myPlayer, SIGNAL(predictImage_disDesture()), this, SLOT(getPredictFeature_disGesture()), Qt::BlockingQueuedConnection);
 }
 
 void QCplot::on_start_clicked()
@@ -660,6 +682,7 @@ void QCplot::on_train_clicked()
 
 void QCplot::on_predict_clicked()
 {	//预测动作
+	//qDebug() << "*";
 	predictTrial = 0;
 	predict_feature.release();
 	predict_label.release();
@@ -689,7 +712,7 @@ void QCplot::on_predict_clicked()
 	//隐藏进度条
 	ui.horizontalSlider->close();
 	myPlayer->threadPredict();	
-
+	//for (int i = 0; i < predictTrialOrderNew.size(); ++i) qDebug() << predictTrialOrderNew[i] << "  ";
 }
 
 void QCplot::on_accuracy_clicked()
@@ -770,7 +793,9 @@ void QCplot::initial()
 	for (int i=0; i<997; ++i)
 	{
 	  Data_x[i] = i;
-	  Data_y[i] = 0; 
+	  Data_y[i] = 0;
+	  dataX[i] = i;
+	  dataY[i] = 0;
 	}
 	ui.customPlot->graph(0)->setData(Data_x, Data_y);
 	ui.customPlot->graph(0)->rescaleAxes();
@@ -1019,7 +1044,7 @@ void QCplot::initial()
 	ui.EMG_1_plot->graph(0)->setName("EMG");
 	ui.EMG_1_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_1_plot->yAxis->setLabel("Amplitude");
-	ui.EMG_1_plot->xAxis->setRange(0, 1000);
+	ui.EMG_1_plot->xAxis->setRange(0, 10000);
 	ui.EMG_1_plot->yAxis->setRange(-2000, 2000);
 	ui.EMG_1_plot->plotLayout()->insertRow(0);
 	ui.EMG_1_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_1_plot, "CH_1"));
@@ -1035,7 +1060,7 @@ void QCplot::initial()
 	ui.EMG_2_plot->graph(0)->setName("EMG");
 	ui.EMG_2_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_2_plot->yAxis->setLabel("Amplitude");
-	ui.EMG_2_plot->xAxis->setRange(0, 1000);
+	ui.EMG_2_plot->xAxis->setRange(0, 10000);
 	ui.EMG_2_plot->yAxis->setRange(-2000, 2000);
 	ui.EMG_2_plot->plotLayout()->insertRow(0);
 	ui.EMG_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_2_plot, "CH_2"));
@@ -1051,7 +1076,7 @@ void QCplot::initial()
 	ui.EMG_3_plot->graph(0)->setName("EMG");
 	ui.EMG_3_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_3_plot->yAxis->setLabel("Amplitude");
-	ui.EMG_3_plot->xAxis->setRange(0, 1000);
+	ui.EMG_3_plot->xAxis->setRange(0, 10000);
 	ui.EMG_3_plot->yAxis->setRange(-2000, 2000);
 	ui.EMG_3_plot->plotLayout()->insertRow(0);
 	ui.EMG_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_3_plot, "CH_3"));
@@ -1067,12 +1092,133 @@ void QCplot::initial()
 	ui.EMG_4_plot->graph(0)->setName("EMG");
 	ui.EMG_4_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_4_plot->yAxis->setLabel("Amplitude");
-	ui.EMG_4_plot->xAxis->setRange(0, 1000);
+	ui.EMG_4_plot->xAxis->setRange(0, 10000);
 	ui.EMG_4_plot->yAxis->setRange(-2000, 2000);
 	ui.EMG_4_plot->plotLayout()->insertRow(0);
-	ui.EMG_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_2_plot, "CH_2"));
+	ui.EMG_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_4_plot, "CH_4"));
 	
-	
+	ui.Amode_1_plot->legend->setFont(font);
+	ui.Amode_1_plot->legend->setVisible(true);
+	ui.Amode_1_plot->legend->setRowSpacing(-5);
+	ui.Amode_1_plot->legend->setIconSize(12, 15);
+	ui.Amode_1_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.Amode_1_plot->addGraph();
+	ui.Amode_1_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.Amode_1_plot->graph(0)->rescaleAxes();
+	ui.Amode_1_plot->graph(0)->setName("Amode");
+	ui.Amode_1_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.Amode_1_plot->yAxis->setLabel("Amplitude");
+	ui.Amode_1_plot->xAxis->setRange(0, 1000);
+	ui.Amode_1_plot->yAxis->setRange(0, 200);
+	ui.Amode_1_plot->plotLayout()->insertRow(0);
+	ui.Amode_1_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.Amode_1_plot, "CH_1"));
+
+	ui.Amode_2_plot->legend->setFont(font);
+	ui.Amode_2_plot->legend->setVisible(true);
+	ui.Amode_2_plot->legend->setRowSpacing(-5);
+	ui.Amode_2_plot->legend->setIconSize(12, 15);
+	ui.Amode_2_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.Amode_2_plot->addGraph();
+	ui.Amode_2_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.Amode_2_plot->graph(0)->rescaleAxes();
+	ui.Amode_2_plot->graph(0)->setName("Amode");
+	ui.Amode_2_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.Amode_2_plot->yAxis->setLabel("Amplitude");
+	ui.Amode_2_plot->xAxis->setRange(0, 1000);
+	ui.Amode_2_plot->yAxis->setRange(0, 200);
+	ui.Amode_2_plot->plotLayout()->insertRow(0);
+	ui.Amode_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.Amode_2_plot, "CH_2"));
+
+	ui.Amode_3_plot->legend->setFont(font);
+	ui.Amode_3_plot->legend->setVisible(true);
+	ui.Amode_3_plot->legend->setRowSpacing(-5);
+	ui.Amode_3_plot->legend->setIconSize(12, 15);
+	ui.Amode_3_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.Amode_3_plot->addGraph();
+	ui.Amode_3_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.Amode_3_plot->graph(0)->rescaleAxes();
+	ui.Amode_3_plot->graph(0)->setName("Amode");
+	ui.Amode_3_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.Amode_3_plot->yAxis->setLabel("Amplitude");
+	ui.Amode_3_plot->xAxis->setRange(0, 1000);
+	ui.Amode_3_plot->yAxis->setRange(0, 200);
+	ui.Amode_3_plot->plotLayout()->insertRow(0);
+	ui.Amode_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.Amode_3_plot, "CH_3"));
+
+	ui.Amode_4_plot->legend->setFont(font);
+	ui.Amode_4_plot->legend->setVisible(true);
+	ui.Amode_4_plot->legend->setRowSpacing(-5);
+	ui.Amode_4_plot->legend->setIconSize(12, 15);
+	ui.Amode_4_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.Amode_4_plot->addGraph();
+	ui.Amode_4_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.Amode_4_plot->graph(0)->rescaleAxes();
+	ui.Amode_4_plot->graph(0)->setName("Amode");
+	ui.Amode_4_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.Amode_4_plot->yAxis->setLabel("Amplitude");
+	ui.Amode_4_plot->xAxis->setRange(0, 1000);
+	ui.Amode_4_plot->yAxis->setRange(0, 200);
+	ui.Amode_4_plot->plotLayout()->insertRow(0);
+	ui.Amode_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.Amode_4_plot, "CH_4"));
+
+	// disGesture
+	ui.disGesture_Amode_plot->legend->setFont(font);
+	ui.disGesture_Amode_plot->legend->setVisible(true);
+	ui.disGesture_Amode_plot->legend->setRowSpacing(-5);
+	ui.disGesture_Amode_plot->legend->setIconSize(12, 15);
+	ui.disGesture_Amode_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.disGesture_Amode_plot->addGraph();
+	ui.disGesture_Amode_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.disGesture_Amode_plot->graph(0)->rescaleAxes();
+	ui.disGesture_Amode_plot->graph(0)->setName("Amode");
+	ui.disGesture_Amode_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.disGesture_Amode_plot->yAxis->setLabel("Amplitude");
+	ui.disGesture_Amode_plot->xAxis->setRange(0, 1000);
+	ui.disGesture_Amode_plot->yAxis->setRange(0, 200);
+	ui.disGesture_Amode_plot->plotLayout()->insertRow(0);
+	ui.disGesture_Amode_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.disGesture_Amode_plot, "CH_1"));
+
+	ui.disGesture_EMG_plot->legend->setFont(font);
+	ui.disGesture_EMG_plot->legend->setVisible(true);
+	ui.disGesture_EMG_plot->legend->setRowSpacing(-5);
+	ui.disGesture_EMG_plot->legend->setIconSize(12, 15);
+	ui.disGesture_EMG_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.disGesture_EMG_plot->addGraph();
+	ui.disGesture_EMG_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.disGesture_EMG_plot->graph(0)->rescaleAxes();
+	ui.disGesture_EMG_plot->graph(0)->setName("EMG");
+	ui.disGesture_EMG_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.disGesture_EMG_plot->yAxis->setLabel("Amplitude");
+	ui.disGesture_EMG_plot->xAxis->setRange(0, 10000);
+	ui.disGesture_EMG_plot->yAxis->setRange(-2000, 2000);
+	ui.disGesture_EMG_plot->plotLayout()->insertRow(0);
+	ui.disGesture_EMG_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.disGesture_EMG_plot, "CH_1"));
+
+	ui.disGesture_IMU_plot->legend->setFont(font);
+	ui.disGesture_IMU_plot->legend->setVisible(true);
+	ui.disGesture_IMU_plot->legend->setRowSpacing(-5);
+	ui.disGesture_IMU_plot->legend->setIconSize(12, 15);
+	ui.disGesture_IMU_plot->axisRect()->insetLayout()->setMargins(QMargins(0, 0, 0, 0));
+	ui.disGesture_IMU_plot->addGraph();
+	ui.disGesture_IMU_plot->graph(0)->setPen(QPen(Qt::black));
+	ui.disGesture_IMU_plot->graph(0)->rescaleAxes();
+	ui.disGesture_IMU_plot->graph(0)->setName("Roll");
+	ui.disGesture_IMU_plot->addGraph();
+	ui.disGesture_IMU_plot->graph(1)->setPen(QPen(Qt::blue));
+	ui.disGesture_IMU_plot->graph(1)->rescaleAxes();
+	ui.disGesture_IMU_plot->graph(1)->setName("Pitch");
+	ui.disGesture_IMU_plot->addGraph();
+	ui.disGesture_IMU_plot->graph(2)->setPen(QPen(Qt::red));
+	ui.disGesture_IMU_plot->graph(2)->rescaleAxes();
+	ui.disGesture_IMU_plot->graph(2)->setName("Yaw");
+
+	ui.disGesture_IMU_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	ui.disGesture_IMU_plot->yAxis->setLabel("Amplitude");
+	ui.disGesture_IMU_plot->xAxis->setRange(0, 1000);
+	ui.disGesture_IMU_plot->yAxis->setRange(-180, 180);
+	ui.disGesture_IMU_plot->plotLayout()->insertRow(0);
+	ui.disGesture_IMU_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.disGesture_IMU_plot, "CH_1"));
+
 	// replot
 	// 更新图形，必须调用
 	ui.customPlot->replot();
@@ -1090,6 +1236,15 @@ void QCplot::initial()
 	ui.EMG_2_plot->replot();
 	ui.EMG_3_plot->replot();
 	ui.EMG_4_plot->replot();
+
+	ui.Amode_1_plot->replot();
+	ui.Amode_2_plot->replot();
+	ui.Amode_3_plot->replot();
+	ui.Amode_4_plot->replot();
+
+	ui.disGesture_Amode_plot->replot();
+	ui.disGesture_EMG_plot->replot();
+	ui.disGesture_IMU_plot->replot();
 }
 //~ 给需要存储数据的文件，以当前时间进行命名。如果文件被.open，则以gettime函数中读取的当前时间和对应格式命名该文件，并写入数据。文件被.close，则关闭当前文件，停止数据写入
 void QCplot::gettime()
@@ -1264,7 +1419,122 @@ void QCplot::showIMUImage_4()
 	//qDebug() << IMU_1_Roll[4];
 	//qDebug() << IMU_y;
 }
+void QCplot::showUnionIMUImage()
+{
+	vector<queue<double>*> tempRowQueue(3), tempPitchQueue(3), tempYawQueue(3);
+	for (int i = 0; i != 3; ++i)
+	{
+		tempRowQueue[i] = &(EMG_Thread->imuBuffer->array[i][0]);
+		tempPitchQueue[i] = &(EMG_Thread->imuBuffer->array[i][1]);
+		tempYawQueue[i] = &(EMG_Thread->imuBuffer->array[i][2]);
+	}
+	bool isEmpty = false;
+	if (!tempRowQueue[0]->empty())
+	{
+		ui.IMU_1_plot->graph(0)->addData(key_IMU_1, double(tempRowQueue[0]->back()));
+		tempRowQueue[0]->pop();
+	}
+	if (!tempPitchQueue[0]->empty())
+	{
+		ui.IMU_1_plot->graph(1)->addData(key_IMU_1, double(tempPitchQueue[0]->back()));
+		tempPitchQueue[0]->pop();
+	}
+	if (!tempYawQueue[0]->empty())
+	{
+		ui.IMU_1_plot->graph(2)->addData(key_IMU_1, double(tempYawQueue[0]->back()));
+		tempYawQueue[0]->pop();
+	}
 
+	if (!tempRowQueue[1]->empty())
+	{
+		ui.IMU_2_plot->graph(0)->addData(key_IMU_1, double(tempRowQueue[1]->back()));
+		tempRowQueue[1]->pop();
+	}
+	if (!tempPitchQueue[1]->empty())
+	{
+		ui.IMU_2_plot->graph(1)->addData(key_IMU_1, double(tempPitchQueue[1]->back()));
+		tempPitchQueue[1]->pop();
+	}
+	if (!tempYawQueue[1]->empty())
+	{
+		ui.IMU_2_plot->graph(2)->addData(key_IMU_1, double(tempYawQueue[1]->back()));
+		tempYawQueue[1]->pop();
+	}
+
+	if (!tempRowQueue[2]->empty())
+	{
+		ui.IMU_3_plot->graph(0)->addData(key_IMU_1, double(tempRowQueue[2]->back()));
+		tempRowQueue[2]->pop();
+	}
+	if (!tempPitchQueue[2]->empty())
+	{
+		ui.IMU_3_plot->graph(1)->addData(key_IMU_1, double(tempPitchQueue[2]->back()));
+		tempPitchQueue[2]->pop();
+	}
+	if (!tempYawQueue[2]->empty())
+	{
+		ui.IMU_3_plot->graph(2)->addData(key_IMU_1, double(tempYawQueue[2]->back()));
+		tempYawQueue[2]->pop();
+	}
+
+	key_IMU_1++;
+	if (key_IMU_1 > 1000)
+	{
+		ui.IMU_1_plot->xAxis->setRange(key_IMU_1 - 950, key_IMU_1 + 50);
+		ui.IMU_2_plot->xAxis->setRange(key_IMU_1 - 950, key_IMU_1 + 50);
+		ui.IMU_3_plot->xAxis->setRange(key_IMU_1 - 950, key_IMU_1 + 50);
+		ui.IMU_4_plot->xAxis->setRange(key_IMU_1 - 950, key_IMU_1 + 50);
+	}
+	if (dataTabFlag)
+	{
+		ui.IMU_1_plot->replot();
+		ui.IMU_2_plot->replot();
+		ui.IMU_3_plot->replot();
+		ui.IMU_4_plot->replot();
+	}
+}
+void QCplot::showUnionIMUImage_2()
+{
+	vector<vector<double>> IMU_roll_array(4);
+	vector<vector<double>> IMU_pitch_array(4);
+	vector<vector<double>> IMU_yaw_array(4);
+	vector<QVector<double>> IMU_roll_plot_y_array(4);
+	vector<QVector<double>> IMU_pitch_plot_y_array(4);
+	vector<QVector<double>> IMU_yaw_plot_y_array(4);
+	for (int i = 0; i < 4; ++i)
+	{
+		auto IMU_Roll_Ptr = &(EMG_Thread->imuBuffer->deArray[i][0]);
+		auto IMU_Pitch_Ptr = &(EMG_Thread->imuBuffer->deArray[i][1]);
+		auto IMU_Yaw_Ptr = &(EMG_Thread->imuBuffer->deArray[i][2]);
+		IMU_roll_array[i] = vector<double>(IMU_Roll_Ptr->begin(), IMU_Roll_Ptr->end());
+		IMU_pitch_array[i] = vector<double>(IMU_Pitch_Ptr->begin(), IMU_Pitch_Ptr->end());
+		IMU_yaw_array[i] = vector<double>(IMU_Yaw_Ptr->begin(), IMU_Yaw_Ptr->end());
+		IMU_roll_plot_y_array[i] = QVector<double>::fromStdVector(IMU_roll_array[i]);
+		IMU_pitch_plot_y_array[i] = QVector<double>::fromStdVector(IMU_pitch_array[i]);
+		IMU_yaw_plot_y_array[i] = QVector<double>::fromStdVector(IMU_yaw_array[i]);
+ 	}
+	QVector<double> IMU_plot_x = EMG_Thread->imuBuffer->Data_x;
+	ui.IMU_1_plot->graph(0)->setData(IMU_plot_x, IMU_roll_plot_y_array[0]);
+	ui.IMU_1_plot->graph(1)->setData(IMU_plot_x, IMU_pitch_plot_y_array[0]);
+	ui.IMU_1_plot->graph(2)->setData(IMU_plot_x, IMU_yaw_plot_y_array[0]);
+
+	ui.IMU_2_plot->graph(0)->setData(IMU_plot_x, IMU_roll_plot_y_array[1]);
+	ui.IMU_2_plot->graph(1)->setData(IMU_plot_x, IMU_pitch_plot_y_array[1]);
+	ui.IMU_2_plot->graph(2)->setData(IMU_plot_x, IMU_yaw_plot_y_array[1]);
+
+	ui.IMU_3_plot->graph(0)->setData(IMU_plot_x, IMU_roll_plot_y_array[2]);
+	ui.IMU_3_plot->graph(1)->setData(IMU_plot_x, IMU_pitch_plot_y_array[2]);
+	ui.IMU_3_plot->graph(2)->setData(IMU_plot_x, IMU_yaw_plot_y_array[2]);
+
+	ui.IMU_4_plot->graph(0)->setData(IMU_plot_x, IMU_roll_plot_y_array[3]);
+	ui.IMU_4_plot->graph(1)->setData(IMU_plot_x, IMU_pitch_plot_y_array[3]);
+	ui.IMU_4_plot->graph(2)->setData(IMU_plot_x, IMU_yaw_plot_y_array[3]);
+
+	ui.IMU_1_plot->replot();
+	ui.IMU_2_plot->replot();
+	ui.IMU_3_plot->replot();
+	ui.IMU_4_plot->replot();
+}
 void QCplot::showEMGImage_1()
 {
 	//std::queue<double>* c_1_tempQueue = &(EMG_Thread->emgBuffer->array[0]);
@@ -1282,8 +1552,9 @@ void QCplot::showEMGImage_1()
 			isEmpty = true;
 	}
 	//qDebug() << isEmpty << endl;
-	if (!isEmpty)
+	while (!isEmpty)
 	{
+		
 		ui.EMG_1_plot->graph(0)->addData(key_EMG_1, double(tempQueue[0]->back()));
 		//qDebug() << double(tempQueue[0]->back()) << endl;
 		tempQueue[0]->pop();		// == (*(tempQueue[0])).pop()
@@ -1293,28 +1564,138 @@ void QCplot::showEMGImage_1()
 		tempQueue[2]->pop();
 		ui.EMG_4_plot->graph(0)->addData(key_EMG_1, double(tempQueue[3]->back()));
 		tempQueue[3]->pop();
-		
+		for (int i = 0; i < 4; i++)
+		{
+			if (tempQueue[i]->empty())
+				isEmpty = true;
+		}
+		key_EMG_1++;
+		if (key_EMG_1 > 10000)
+		{
+			ui.EMG_1_plot->xAxis->setRange(key_EMG_1 - 9950, key_EMG_1 + 50);
+			ui.EMG_2_plot->xAxis->setRange(key_EMG_1 - 9950, key_EMG_1 + 50);
+			ui.EMG_3_plot->xAxis->setRange(key_EMG_1 - 9950, key_EMG_1 + 50);
+			ui.EMG_4_plot->xAxis->setRange(key_EMG_1 - 9950, key_EMG_1 + 50);
+		}
 	}
 	/*key_EMG_1++;
 	ui.EMG_1_plot->replot();*/
-	key_EMG_1++;
-	if (key_EMG_1 > 1000)
+	if (dataTabFlag)
 	{
-		ui.EMG_1_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
-		ui.EMG_2_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
-		ui.EMG_3_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
-		ui.EMG_4_plot->xAxis->setRange(key_EMG_1 - 999.9, key_EMG_1 + 0.1);
+		ui.EMG_1_plot->replot();
+		ui.EMG_2_plot->replot();
+		ui.EMG_3_plot->replot();
+		ui.EMG_4_plot->replot();
 	}
+
+}
+void QCplot::showEMGImage_2()
+{
+	vector<vector<double>> EMGDataArray(4);
+	vector<QVector<double>> EMG_plot_y_array(4);
+	for (int i = 0; i < 4; ++i)
+	{
+		auto EMGPtr = &(EMG_Thread->emgBuffer->deArray[i]);
+		EMGDataArray[i] = vector<double>(EMGPtr->begin(), EMGPtr->end());
+		EMG_plot_y_array[i] = QVector<double>::fromStdVector(EMGDataArray[i]);
+	}
+	QVector<double> EMG_plot_x = EMG_Thread->emgBuffer->Data_x;
+	ui.EMG_1_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[0]);
+	ui.EMG_2_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[1]);
+	ui.EMG_3_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[2]);
+	ui.EMG_1_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[3]);
+
 	ui.EMG_1_plot->replot();
 	ui.EMG_2_plot->replot();
 	ui.EMG_3_plot->replot();
 	ui.EMG_4_plot->replot();
 }
 
+void QCplot::showAmodeImage_1(std::vector<std::vector<double>> CurrentPackage)
+{
+	uint8_t channelNums = 4;
+	uint8_t channelNum = 0;
+	for (int i = 0; i != channelNums; ++i)
+	{
+		std::vector<double> temp(CurrentPackage[i].begin() + 2, CurrentPackage[i].end() - 1);
+		dataY = QVector<double>::fromStdVector(temp);
+		channelNum = CurrentPackage[i][1];
+		switch (channelNum)
+		{
+		case 1:
+			ui.Amode_1_plot->graph(0)->setData(dataX, dataY);
+			ui.Amode_1_plot->replot();
+			break;
+		case 2:
+			ui.Amode_2_plot->graph(0)->setData(dataX, dataY);
+			ui.Amode_2_plot->replot();
+			break;
+		case 3:
+			ui.Amode_3_plot->graph(0)->setData(dataX, dataY);
+			ui.Amode_3_plot->replot();
+			break;
+		case 4:
+			ui.Amode_4_plot->graph(0)->setData(dataX, dataY);
+			ui.Amode_4_plot->replot();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void QCplot::showDisGestureDataImage(const int& EMGChannel, const int& IMUChannel)
+{
+	
+	int EMGIndex = EMGChannel - 1;
+	int IMUIndex = IMUChannel - 1;
+	// EMG Plot
+	auto EMGPtr = &(EMG_Thread->emgBuffer->deArray[EMGIndex]);
+	//qDebug() << "1: " << *(EMGPtr->end() - 1) << endl;
+	vector<double> EMGData(EMGPtr->begin(), EMGPtr->end());
+	//qDebug() << "2: " << *(EMGData.end() - 1) << endl;
+	EMG_Data_x = EMG_Thread->emgBuffer->Data_x;
+	EMG_Data_y = QVector<double>::fromStdVector(EMGData);
+	//qDebug() << "3: " << *(EMG_Data_y.end() - 1) << endl;
+	ui.disGesture_EMG_plot->graph(0)->setData(EMG_Data_x, EMG_Data_y);
+	ui.disGesture_EMG_plot->replot();
+	// IMU Plot
+	auto IMU_Roll_Ptr = &(EMG_Thread->imuBuffer->deArray[IMUIndex][0]);
+	auto IMU_Pitch_Ptr = &(EMG_Thread->imuBuffer->deArray[IMUIndex][1]);
+	auto IMU_Yaw_Ptr = &(EMG_Thread->imuBuffer->deArray[IMUIndex][2]);
+	vector<double> IMURollData(IMU_Roll_Ptr->begin(), IMU_Roll_Ptr->end());
+	vector<double> IMUPitchData(IMU_Pitch_Ptr->begin(), IMU_Pitch_Ptr->end());
+	vector<double> IMUYawData(IMU_Yaw_Ptr->begin(), IMU_Yaw_Ptr->end());
+	IMU_Data_x = EMG_Thread->imuBuffer->Data_x;
+	IMU_Roll_Data_y = QVector<double>::fromStdVector(IMURollData);
+	IMU_Pitch_Data_y = QVector<double>::fromStdVector(IMUPitchData);
+	IMU_Yaw_Data_y = QVector<double>::fromStdVector(IMUYawData);
+	ui.disGesture_IMU_plot->graph(0)->setData(IMU_Data_x, IMU_Roll_Data_y);
+	ui.disGesture_IMU_plot->graph(1)->setData(IMU_Data_x, IMU_Pitch_Data_y);
+	ui.disGesture_IMU_plot->graph(2)->setData(IMU_Data_x, IMU_Yaw_Data_y);
+	ui.disGesture_IMU_plot->replot();
+}
+void QCplot::showDisGestureAmodeImage(const int& AmodeChannel)
+{
+	int AmodeIndex = AmodeChannel - 1;
+	vector<vector<double>> currentPackage;
+	if (wifi_Thread->copydata_wifi(currentPackage))
+	{
+		vector<double> AmodeData(currentPackage[AmodeIndex].begin() + 2, currentPackage[AmodeIndex].end() - 1);
+		int channelNum = currentPackage[AmodeIndex][1];
+		if (channelNum != AmodeChannel)
+			qDebug() << "wrong" << endl;
+		Amode_Data_y = QVector<double>::fromStdVector(AmodeData);
+		ui.disGesture_Amode_plot->graph(0)->setData(Amode_Data_x, Amode_Data_y);
+		ui.disGesture_Amode_plot->replot();
+	}
+}
+
 //~ 将A超信号实时刷新显示到控件上
 void QCplot::showimage1(std::vector<std::vector<double>> CurrentPackage)
 {
-	int chnum = 8;
+	//int chnum = 8;
+	int chnum = 4;
 	int sample_length = 1000;
 	int channelnum = 0;
 	//for (int i= 0; i<chnum; i+=2 )
@@ -1395,7 +1776,8 @@ void QCplot::getTrainFeature(QImage Aimg)
 	rawData = matImage;   
 	//if(rawData.rows == 8)
 	//可将后面的rawData直接替换成matImage
-	if((rawData.rows == 8)&&(rawData.at<float>(0,1) == 1))
+	//if((rawData.rows == 8)&&(rawData.at<float>(0,1) == 1))
+	if ((rawData.rows == 4) && (rawData.at<float>(0, 1) == 1))
 	{
 			rawData.convertTo(rawData, CV_32FC1);
 			//std::cout<< rawData.col(1);
@@ -1433,7 +1815,8 @@ void QCplot::getTrainFeature1(QImage Aimg)
 	matImage.convertTo(matImage, CV_32FC1);
 	showimage1(matImage);
 	rawData = matImage;   
-	if((rawData.rows == 8)&&(rawData.at<float>(0,1) == 1))
+	//if((rawData.rows == 8)&&(rawData.at<float>(0,1) == 1))
+	if ((rawData.rows == 4) && (rawData.at<float>(0, 1) == 1))
 	{
 		Mat imageFeature;
 
@@ -1609,7 +1992,8 @@ void QCplot::getPredictFeature(QImage Aimg)
 	showimage1(matImage);
 	rawData = matImage;  
 	//if( rawData.rows == 8)
-	if((rawData.rows == 8)&&(rawData.at<float>(0,1) == 1))
+	//if((rawData.rows == 8)&&(rawData.at<float>(0,1) == 1))
+	if ((rawData.rows == 4) && (rawData.at<float>(0, 1) == 1))
 	{
 		rawData.convertTo(rawData, CV_32FC1);
 		Mat imageFeature;
@@ -3265,12 +3649,20 @@ void QCplot::getTrainFeature_mode1()
 {
 	Mat rawData(8, 1000, CV_32FC1);
 	std::vector<std::vector<double>> CurrentPackage;
+	//QDateTime currentTime = QDateTime::currentDateTime();
+	//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+	//qDebug() << currentTime_str << endl;
 	if (p->copydata1(CurrentPackage) == true || wifi_Thread->copydata_wifi(CurrentPackage) == true)//~ 读取A超设备传的数据
 	{
+		//qDebug() << "*" << endl;
+		QDateTime currentTime = QDateTime::currentDateTime();
+		QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+		qDebug() << currentTime_str << endl;
 		showimage1(CurrentPackage);//~ 显示当前A超信号到控件
 		for (int i = 0; i < CurrentPackage.size(); i++)
 		{
 			for (int j = 0; j < 1000; j++)
+
 			{
 				rawData.at<float>(i, j) = float(CurrentPackage[i][j]);
 			}
@@ -3992,7 +4384,7 @@ void QCplot::serialPortInit()
 	//connect(serialPort, SIGNAL(readyRead()), this, SLOT(readData()));
 	connect(ui.hex_checkBox, SIGNAL(toggled(bool)), this, SLOT(receiveChangeState(bool)));
 	connect(serialPort, SIGNAL(readyRead()), this, SLOT(dispalySerialData()));
-	connect(serialPort, SIGNAL(readyRead()), this, SLOT(updateIMUImage()));
+	//connect(serialPort, SIGNAL(readyRead()), this, SLOT(updateIMUImage()));
 
 	key_IMU_1 = 0;
 	key_IMU_2 = 0;
@@ -4005,9 +4397,20 @@ void QCplot::emgSerialPortInit()
 	ui.emg_stop_serialPort_button->setEnabled(false);
 	getEmgExistingSerialPort();
 	connect(ui.emg_hex_checkBox, SIGNAL(toggled(bool)), this, SLOT(receiveChangeState(bool)));
-	connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(displayEMGSerialData()));
+	//connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(displayEMGSerialData()));
 	connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(updateEMGImage()));
+	QObject::connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(updateDisGetureDataImage()));
+	//connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(updatePlayerUI()));
+	// A mode
+	QObject::connect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(updateAmodeImage()));
+	QObject::connect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(updateDisGestureAmodeImage()));
 	key_EMG_1 = 0;
+	key_EMG_1 = 0;
+	showCount = 0;
+	//ui.emg_clear_button
+	//connect(&refreshTime, SIGNAL(timeout()), this, SLOT(updateEMGImage()));
+	//connect(emgSerialPort, SIGNAL(updateEMGSignal()), this, SLOT(updateEMGImage()));
+	refreshTime.start(0);
 }
 void QCplot::getExistingSerialPort()
 {
@@ -4025,12 +4428,15 @@ void QCplot::getExistingSerialPort()
 }
 void QCplot::getEmgExistingSerialPort()
 {
+	ui.emg_serialPort_comboBox->setEnabled(true);
+	qDebug() << ui.emg_serialPort_comboBox->count() << endl;
 	for (int i = 0; i < ui.emg_serialPort_comboBox->count(); i++)
 	{
 		ui.emg_serialPort_comboBox->removeItem(i);
 	}
 	emgSerialList = emgSerialPortInfo->availablePorts();
 	int emgSerialNum = emgSerialList.length();
+	qDebug() << emgSerialNum << endl;
 	for (int i = 0; i < emgSerialNum; i++)
 	{
 		QString emgSerialName = emgSerialList[i].portName();
@@ -4133,7 +4539,6 @@ bool QCplot::setDataBits()
 {
 	QVariant data = ui.dataBits_comboBox->currentText();
 	QSerialPort::DataBits dataBits = dataBitsMap[data.toInt()];
-	qDebug() << dataBits;
 	bool dataBitsSet = serialPort->setDataBits(dataBits);
 	if (dataBitsSet == false)
 	{
@@ -4149,6 +4554,7 @@ bool QCplot::setEmgDataBits()
 {
 	QVariant data = ui.emg_dataBits_comboBox->currentText();
 	QSerialPort::DataBits emgDataBits = dataBitsMap[data.toInt()];
+	qDebug() << emgDataBits << endl;
 	bool emgDataBitsSet = emgSerialPort->setDataBits(emgDataBits);
 	if (emgDataBitsSet == false)
 		ui.emg_receiveWindow->append(QString::fromLocal8Bit("数据位设置失败") + "\n");
@@ -4201,7 +4607,7 @@ bool QCplot::setEmgStopBits()
 {
 	QVariant data = ui.emg_stopBit_comboBox->currentText();
 	QSerialPort::StopBits stopBits = stopBitsMap[data.toFloat()];
-	bool emgStopBitsSet = serialPort->setStopBits(stopBits);
+	bool emgStopBitsSet = emgSerialPort->setStopBits(stopBits);
 	if (emgStopBitsSet == false)
 		ui.emg_receiveWindow->append(QString::fromLocal8Bit("停止位设置失败") + "\n");
 	else
@@ -4413,8 +4819,625 @@ void QCplot::updateIMUImage()
 	this->showIMUImage_2();
 	this->showIMUImage_3();
 }
+int updateEMGCount = 0;
 void QCplot::updateEMGImage()
 {
-	this->showEMGImage_1();
-	//qDebug() << "in" << endl;
+	/*if (updateEMGCount > 10)
+	{
+		this->showEMGImage_1();
+		this->showUnionIMUImage();
+		updateEMGCount = 0;
+	}
+	++updateEMGCount;*/
+	// 旧版本更新图窗方式
+	//this->showEMGImage_1();
+	//this->showUnionIMUImage();
+	// 改进
+	showEMGImage_2();
+	showUnionIMUImage_2();
+}
+void QCplot::on_emg_clear_button_clicked()
+{
+	//updateEMGImage();
+	;
+}
+void QCplot::updateAmodeImage()
+{
+	//QDateTime currentTime = QDateTime::currentDateTime();
+	//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+	//qDebug() << currentTime_str << endl;
+	//qDebug() << "update A" << endl;
+	if (dataTabFlag)
+	{
+		std::vector<std::vector<double>> CurrentPackage;
+		if (wifi_Thread->copydata_wifi(CurrentPackage))
+		{
+			//QDateTime currentTime = QDateTime::currentDateTime();
+			//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+			//qDebug() << currentTime_str << endl;
+			//qDebug() << "*****" << endl;
+			showAmodeImage_1(CurrentPackage);
+		}
+	}
+}
+void QCplot::on_saveData_button_clicked()
+{
+	//vector<double> testVec(10, 0.4);
+	auto ptr = &EMG_Thread->emgBuffer->vectorArray[1];
+	auto ptr_pac = &EMG_Thread->emgBuffer->packageNumArray;
+	auto ptr_ipa = &EMG_Thread->imuBuffer->packageNumArray;
+
+	auto ptr_imu = &EMG_Thread->imuBuffer->vectorArray[0][0];
+
+	QString filePath = "E:\\2021-2022\\Upper Software\\QT_2threads_36_wifi_SPC(WiFi)_1220\\";
+	QDateTime currentTime = QDateTime::currentDateTime();
+	QString currentTime_str = currentTime.toString("dd_hh_mm_ss");
+	//qDebug() << currentTime_str << endl;
+	QFile saveFile(filePath + "EMG " + currentTime_str + " Exp.txt");
+	QFile savePackageFile(filePath + "PAC " + currentTime_str + " Exp.txt");
+	QFile saveIMUPackageFile(filePath + "IPA " + currentTime_str + " Exp.txt");
+	
+	QFile saveIMUFile(filePath + "IMU " + currentTime_str + " Exp.txt");
+
+	if (!saveFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text) ||
+		!savePackageFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text) ||
+		!saveIMUPackageFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text) ||
+		!saveIMUFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text)) {//追加写入 添加结束符\r\n
+		QMessageBox::warning(this, tr("错误"), tr("打开文件失败,数据保存失败"));
+		return;
+	}
+	else {
+		QTextStream out(&saveFile);
+		QTextStream out_pac(&savePackageFile);
+		QTextStream out_ipa(&saveIMUPackageFile);
+
+		QTextStream out_imu(&saveIMUFile);
+
+		for (auto i = ptr->begin(); i != ptr->end(); ++i)
+			out << *i << endl;
+		for (auto i = ptr_pac->begin(); i != ptr_pac->end(); ++i)
+			out_pac << *i << endl;
+		for (auto i = ptr_ipa->begin(); i != ptr_ipa->end(); ++i)
+			out_ipa << *i << endl;
+		for (auto i = ptr_imu->begin(); i != ptr_imu->end(); ++i)
+			out_imu << *i << endl;
+	}
+	saveFile.close();
+	savePackageFile.close();
+	saveIMUPackageFile.close();
+	saveIMUFile.close();
+	//ui.saveData_button->setEnabled(false);
+}
+
+void QCplot::saveAmodeData_disGesture(std::vector<std::vector<double>> CurrentPackage)
+{
+	int channelNums = 4;
+	for (int i = 0; i != channelNums; ++i)
+	{
+		std::vector<double> temp(CurrentPackage[i].begin() + 2, CurrentPackage[i].end() - 1);
+		int channelNum = CurrentPackage[i][1];
+		if (channelNum == (i + 1))
+		{
+			QTextStream out(&qfSaveAmodeFile[i]);
+			for (auto it = temp.begin(); it != temp.end(); ++it)
+			{
+				out << *it << endl;
+			}
+		}
+	}
+}
+
+void QCplot::saveEMGData_disGesture()
+{
+	for (int i = 0; i != 4; ++i)
+	{
+		auto ptr = &EMG_Thread->emgBuffer->vectorArray[i];
+		auto label_ptr = &emgLabel[i];
+		if (!qfSaveEMGFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text) ||
+			!qfSaveEMGLabelFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text))
+		{
+			QMessageBox::warning(this, tr("错误"), tr("打开文件夹失败"));
+			return;
+		}
+		else
+		{
+			QTextStream out(&qfSaveEMGFile[i]);
+			for (auto it = ptr->begin(); it != ptr->end(); ++it)
+			{
+				out << *it << endl;
+			}
+			qfSaveEMGFile[i].close();
+			QTextStream out_label(&qfSaveEMGLabelFile[i]);
+			for (auto it = label_ptr->begin(); it != label_ptr->end(); ++it)
+			{
+				out_label << *it << endl;
+			}
+			qfSaveEMGLabelFile[i].close();
+		}
+	}
+	auto ptr_pac = &EMG_Thread->emgBuffer->packageNumArray;
+	QTextStream out_pac(&qfSaveEMGPacFile);
+	for (auto it = ptr_pac->begin(); it != ptr_pac->end(); ++it)
+	{
+		out_pac << *it << endl;
+	}
+	qfSaveEMGPacFile.close();
+}
+
+void QCplot::saveIMUData_disGesture()
+{
+	
+}
+
+
+void QCplot::on_clearData_button_clicked()
+{
+	EMG_Thread->emgBuffer->vectorArray[1].clear();
+	EMG_Thread->emgBuffer->packageNumArray.clear();
+	EMG_Thread->imuBuffer->vectorArray[0][0].clear();
+	//ui.clearData_button->setEnabled(false);
+}
+
+// disGesture
+void QCplot::showTrainImage_disGesture()
+{
+	dataTabFlag = true;
+	channelMap.insert("A-mode Channel 1", 1);
+	channelMap.insert("A-mode Channel 2", 2);
+	vector<QHBoxLayout*> imageLaoutArray;
+	imageLaoutArray.push_back(ui.disGesture_layout_1);
+	imageLaoutArray.push_back(ui.disGesture_layout_2);
+	imageLaoutArray.push_back(ui.disGesture_layout_3);
+	imageLaoutArray.push_back(ui.disGesture_layout_4);
+	imageLaoutArray.push_back(ui.disGesture_layout_5);
+	imageLaoutArray.push_back(ui.disGesture_layout_6);
+	imageLaoutArray.push_back(ui.disGesture_layout_8);
+	imageLaoutArray.push_back(ui.disGesture_layout_9);
+	imageLaoutArray.push_back(ui.disGesture_layout_10);
+	imageLaoutArray.push_back(ui.disGesture_layout_11);
+	QDir dir("gesture-disGesture");
+	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+	dir.setSorting(QDir::Name | QDir::NoSort);
+	QFileInfoList list = dir.entryInfoList();
+	classNum_disGesture = list.size();
+	for (int i = 0; i != classNum_disGesture; ++i)
+	{
+		disGestureTrainOrder.push_back(i);
+		QFileInfo fileInfo = list.at(i);
+		String filename;
+		filename.append("gesture-disGesture/");
+		filename.append(fileInfo.fileName().toLatin1().data());		//由QString转到String
+		disGestureName.push_back(filename);
+		cv::Mat currentImage = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+		cv::Mat currentQImage;
+		cv::cvtColor(currentImage, currentQImage, CV_BGR2RGB);
+		QImage img = QImage((const unsigned char*)(currentQImage.data), currentQImage.cols,
+			currentQImage.rows, currentQImage.step, QImage::Format_RGB888);
+
+		disImgArr.push_back(img);
+
+		QLabel* labelTrainImage = new QLabel(ui.centralWidget);
+		QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+		//ui
+		imageLaoutArray[i]->addWidget(labelTrainImage);
+		labelTrainImage->setScaledContents(true);
+		//labelTrainImage->resize(ui.imageWidget->size());
+		labelTrainImage->setAutoFillBackground(false);
+		labelTrainImage->setStyleSheet(QStringLiteral("Background-color: #000;"));
+		labelTrainImage->setPixmap(QPixmap::fromImage(img));
+		labelTrainImage->show();
+		imageShowLabel_disGesture.push_back(labelTrainImage);
+	}
+}
+//void QCplot::show(
+void QCplot::on_disGesture_start_button_clicked()
+{
+	// 初始化标签vector
+	emgLabel.resize(4);
+	if (myPlayer->isStop())
+	{
+		myPlayer->threadStart();
+		ui.disGesture_start_button->setEnabled(false);
+	}
+
+	else
+	{
+		myPlayer->setStop();
+	}
+	ui.disGesture_train_button->setEnabled(true);
+	ui.disGesture_stop_button->setEnabled(true);
+
+	dataTabFlag = false;
+}
+
+void QCplot::on_disGesture_train_button_clicked()
+{
+
+	ui.disGesture_train_button->setEnabled(false);
+	// 创建文件夹及txt文件用于存储训练数据
+	QDateTime currentTime = QDateTime::currentDateTime();
+	QString strCurrentTime = currentTime.toString("dd_hh_mm_ss");
+	QString strTrainDataPath = "TrainData/" + strCurrentTime;
+	trainFileName = strCurrentTime;
+	QDir dir;
+	if (!dir.exists(strTrainDataPath))
+	{
+		dir.mkpath(strTrainDataPath);
+	}
+	for (int i = 0; i != 4; ++i)
+	{
+		QString tempPath = strTrainDataPath + "/Channel_" + QString::number(i, 10);
+		if (!dir.exists(tempPath))
+		{
+			dir.mkpath(tempPath);
+		}
+	}
+	for (int i = 0; i != 4; ++i)
+	{
+		QString tempPath = strTrainDataPath + "/Channel_" + QString::number(i, 10);
+		qfSaveAmodeFile[i].setFileName(tempPath + "/Amode " + strCurrentTime + " Exp.txt");
+		qfSaveEMGFile[i].setFileName(tempPath + "/EMG " + strCurrentTime + " Exp.txt");
+		qfSaveIMUFile[i].setFileName(tempPath + "/IMU " + strCurrentTime + " Exp.txt");
+		qfSaveEMGLabelFile[i].setFileName(tempPath + "/EMG_Label " + strCurrentTime + " Exp.txt");
+		qfSaveAmodeFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+		//qfSaveEMGFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+		qfSaveIMUFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+	
+		EMG_Thread->emgBuffer->vectorArray[i].clear();
+		//if(i != 3)
+		//	EMG_Thread->imuBuffer->vectorArray[i].clear();
+	}
+	qfSaveAmodePacFile.setFileName(strTrainDataPath + "/APAC " + strCurrentTime + " Exp.txt");
+	qfSaveEMGPacFile.setFileName(strTrainDataPath + "/EPAC " + strCurrentTime + " Exp.txt");
+	qfSaveIMUPacFile.setFileName(strTrainDataPath + "/IPAC " + strCurrentTime + " Exp.txt");
+
+	qfSaveAmodePacFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+	qfSaveEMGPacFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+	qfSaveIMUPacFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+	
+	myPlayer->threadTrain_disDesture();
+}
+
+void QCplot::on_disGesture_stop_button_clicked()
+{
+	myPlayer->threadFree();
+	ui.disGesture_start_button->setEnabled(true);
+	ui.disGesture_stop_button->setEnabled(false);
+	dataTabFlag = true;
+}
+
+void QCplot::on_disGesture_save_button_clicked()
+{
+	saveEMGData_disGesture();
+	saveIMUData_disGesture();
+}
+
+void QCplot::on_disGesture_clear_button_clicked()
+{
+	;
+}
+
+void QCplot::updateDisGetureDataImage()
+{
+	
+	// char不能直接转int，ASCII码，要减去'0'
+	
+	string sEMG_channel = ui.disGesture_EMG_comboBox->currentText().toStdString();
+	int iEMG_channel = static_cast<int>(*(sEMG_channel.end() - 1) - '0');
+	string sIMU_channel = ui.disGesture_IMU_comboBox->currentText().toStdString();
+	int iIMU_channel = static_cast<int>(*(sIMU_channel.end() - 1) - '0');
+	if (!ui.disGesture_start_button->isEnabled())
+	{
+		if (iEMG_channel <= 4 && iIMU_channel <= 4)
+		{
+			showDisGestureDataImage(iEMG_channel, iIMU_channel);
+		}
+	}
+}
+void QCplot::updateDisGestureAmodeImage()
+{
+	string sAmode_channel = ui.disGesture_Amode_comboBox->currentText().toStdString();
+	int iAmode_channel = static_cast<int>(*(sAmode_channel.end() - 1) - '0');
+	if (!ui.disGesture_start_button->isEnabled())
+	{
+		if (iAmode_channel <= 4)
+		{
+			showDisGestureAmodeImage(iAmode_channel);
+		}
+	}
+}
+void QCplot::getTrainFeature_disGesture()
+{
+	std::vector<std::vector<double>> CurrentPackage;
+	if (wifi_Thread->copydata_wifi(CurrentPackage) == true)
+	{
+		saveAmodeData_disGesture(CurrentPackage);
+	}
+	packetNum_disGesture++;
+	ui.disGesture_progressBar_1->setValue(packetNum_disGesture + 1);
+
+	int step = packetNum_disGesture % (frameRate * holdTime_disGesture * classNum_disGesture);
+	int temp = frameRate * holdTime_disGesture;
+
+	if ((step >= 0) && (step < temp))
+	{
+		if (step == 1)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[5]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[0]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+
+		if (step > temp - frameRate)
+		{
+			imageShowLabel_disGesture[1]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= temp) && (step < 2 * temp))
+	{
+		if (step == temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[0]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[1]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step > 2 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[2]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 2 * temp) && (step < 3 * temp))
+	{
+		if (step == 2 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[1]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[2]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step > 3 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[3]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 3 * temp) && (step < 4 * temp))
+	{
+		if (step == 3 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[2]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[3]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step > 4 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[4]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 4 * temp) && (step < 5 * temp))
+	{
+		if (step == 4 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[3]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[4]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step > 5 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[5]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 5 * temp) && (step < 6 * temp))
+	{
+		if (step == 5 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[4]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[5]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step == 6 * temp - 1)
+		{
+			//~ 提示休息10s
+			ui.textBrowser->setText("Rest 10s");
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+	}
+	
+	if (packetNum_disGesture >= frameRate * holdTime_disGesture * trialNum_disGesture * classNum_disGesture)
+	{
+		imageShowLabel_mode1[5]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[0]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		ui.disGesture_train_button->setEnabled(true);
+
+		ui.textBrowser->setText("");
+
+		for (int i = 0; i != 4; ++i)
+		{
+			qfSaveAmodeFile[i].close();
+		}
+		saveEMGData_disGesture();
+		saveIMUData_disGesture();
+
+
+		// kNN分类训练
+		ui.textBrowser->setText("Start Trainning!");
+		EMGTrain* train = new EMGTrain();
+		train->readData(trainFileName);
+		train->computeFeature();
+		KNN_model = train->myKNNTrain();
+		ui.textBrowser->setText("Complete!");
+
+
+		myPlayer->threadFree();
+		ui.disGesture_predict_button->setEnabled(true);
+	}
+	else if (step == 0)
+	{
+		_sleep(10000);
+		ui.textBrowser->setText("");
+	}
+}
+
+void QCplot::on_disGesture_predict_button_clicked()
+{
+	time_disGesturePredict = 5;
+	num_disGesturePredict = 0;
+	disGesturePredictTrial = 0;
+	vector<int> tempOrder = disGestureTrainOrder;
+	random_shuffle(tempOrder.begin(), tempOrder.end());
+	for (int i = 0; i < classNum_disGesture; ++i)
+	{
+		disGesturePredictOrder.push_back(tempOrder[i]);
+	}
+	for (int i = 0; i < classNum_disGesture; ++i)
+	{
+		disGesturePredictOrder.push_back(tempOrder[i]);
+	}
+	ui.disGesture_predict_button->setEnabled(false);
+	ui.disGesture_progressBar_1->close();
+
+	for (int i = 0; i < 4; ++i)
+	{
+		EMG_Thread->emgBuffer->vectorArray[i].clear();
+	}
+	EMG_predictData.resize(4);
+	timeWindow = 100;
+	strideWindow = 150;
+	EMGrealLabel = 0;
+	EMGpredictLabel = 0;
+	myPlayer->threadPredict_disDesture();
+}
+
+void QCplot::getPredictFeature_disGesture()
+{
+	// timeWindow = 100, strideWindow = 150;
+	if (num_disGesturePredict % (frameRate * time_disGesturePredict) == 0)
+	{
+		EMGrealLabel = disGesturePredictOrder[disGesturePredictTrial] + 1;
+		if (disGesturePredictTrial == 0)
+		{
+			imageShowLabel_disGesture[disGesturePredictOrder[disGesturePredictTrial++]]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(255, 0, 0);");
+		}
+		else
+		{
+			imageShowLabel_disGesture[disGesturePredictOrder[disGesturePredictTrial - 1]]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+			imageShowLabel_disGesture[disGesturePredictOrder[disGesturePredictTrial++]]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(255, 0, 0);");
+		}
+	}
+	if (num_disGesturePredict % (frameRate * time_disGesturePredict) >= frameRate * time_disGesturePredict * 0.8)
+	{
+		if (disGesturePredictTrial < disGesturePredictOrder.size())
+		{
+			imageShowLabel_disGesture[disGesturePredictOrder[disGesturePredictTrial]]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	num_disGesturePredict++;
+	if (num_disGesturePredict >= frameRate * time_disGesturePredict * (2 * classNum_disGesture - 1))
+	{	//去掉之前的提示框
+		imageShowLabel_disGesture[disGesturePredictOrder[disGesturePredictTrial - 1]]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		myPlayer->threadFree();
+		ui.disGesture_predict_button->setEnabled(true);
+	}
+	// 预测
+	bool predictFlag = true;
+	for (int i = 0; i < 4; ++i)
+	{
+		if (EMG_Thread->emgBuffer->vectorArray[i].size() < strideWindow)
+			predictFlag = false;
+	}
+	if (predictFlag)
+	{
+		EMG_predictData.clear();
+		for (int i = 0; i < 4; ++i)
+		{
+			const auto& cend = EMG_Thread->emgBuffer->vectorArray[i].cend();
+			EMG_predictData[i] = vector<double>(cend - strideWindow, cend);
+		}
+		EMGPredict* predict = new EMGPredict(EMG_predictData, KNN_model, EMGrealLabel);
+		predict->computeFeature();
+		int nowLabel = predict->KNNPredict(5);
+		EMGpredictQue.push_back(nowLabel);
+		if (EMGpredictQue.size() >= 3) EMGpredictQue.pop_front();
+		bool same = true;
+		for (int i = 0; i < 2; ++i)
+			if (EMGpredictQue[i] != EMGpredictQue[i + 1]) same = false;
+		if (same)
+			EMGpredictLabel = EMGpredictQue.front();
+		if (EMGpredictLabel)
+		{
+			showEMGpredictImg(EMGpredictLabel - 1);
+		}
+	}
+}
+
+void QCplot::showEMGpredictImg(int index)
+{
+
+	//QLabel* labelPredictImage = new QLabel(ui.centralWidget);
+	//QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+	////ui
+	//ui.disGesture_layout_result->addWidget(labelPredictImage);
+	//labelPredictImage->setScaledContents(true);
+	////labelPredictImage->resize(ui.imageWidget->size());
+	//labelPredictImage->setAutoFillBackground(false);
+	//labelPredictImage->setStyleSheet(QStringLiteral("Background-color: #000;"));
+	//labelPredictImage->setPixmap(QPixmap::fromImage(disImgArr[index]));
+	//labelPredictImage->show();
+	QWidget* p = nullptr;
+	if(ui.disGesture_layout_result->itemAt(0))
+		p = ui.disGesture_layout_result->itemAt(0)->widget();
+	ui.disGesture_layout_result->removeWidget(p);
+
+	QDir dir("gesture-disGesture");
+	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+	dir.setSorting(QDir::Name | QDir::NoSort);
+	QFileInfoList list = dir.entryInfoList();
+	int i = index;
+
+	disGestureTrainOrder.push_back(i);
+	QFileInfo fileInfo = list.at(i);
+	String filename;
+	filename.append("gesture-disGesture/");
+	filename.append(fileInfo.fileName().toLatin1().data());		//由QString转到String
+	disGestureName.push_back(filename);
+	cv::Mat currentImage = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+	cv::Mat currentQImage;
+	cv::cvtColor(currentImage, currentQImage, CV_BGR2RGB);
+	QImage img = QImage((const unsigned char*)(currentQImage.data), currentQImage.cols,
+		currentQImage.rows, currentQImage.step, QImage::Format_RGB888);
+
+	QLabel* labelTrainImage = new QLabel(ui.centralWidget);
+	QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+	//ui
+	ui.disGesture_layout_result->addWidget(labelTrainImage);
+	labelTrainImage->setScaledContents(true);
+	//labelTrainImage->resize(ui.imageWidget->size());
+	labelTrainImage->setAutoFillBackground(false);
+	labelTrainImage->setStyleSheet(QStringLiteral("Background-color: #000;"));
+	labelTrainImage->setPixmap(QPixmap::fromImage(img));
+	labelTrainImage->show();
+	imageShowLabel_disGesture.push_back(labelTrainImage);
+}
+void QCplot::on_disGesture_parameters_button_clicked()
+{
+	parameters_window_disGesture->show();
 }

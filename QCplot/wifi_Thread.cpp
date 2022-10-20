@@ -1,3 +1,4 @@
+// 8 channel -> 4 channel
 #include "afxwin.h" //~ 需要放在最开头的位置！！
 //~ 添加全局变量
 #include "GlobalData.h"
@@ -30,7 +31,8 @@ void thread_two::run()//~ 开启多线程（wifi_Tread->start()）后执行该函数
 }
 
 void thread_two::onReadyRead()
-{		
+{
+	//qDebug() << "onReadyRead" << endl;
 	int chnum = 8;
 	int sample_length = 1000;
 	char par[1000];//~ 临时存储1*1000的WiFi数据
@@ -92,10 +94,10 @@ void thread_two::onReadyRead()
 		{
 			if (ChannelNumber == channelCount)
 			{
-				//channelOneFlag = false;//~ 当接收到第4个通道后，回到开头
-				//channelCount = 1;
+				channelOneFlag = false;//~ 当接收到第4个通道后，回到开头
+				channelCount = 1;
 				wifi_Package.push_back(temp);
-				channelCount++;
+				//channelCount++;
 			}
 			else
 			{
@@ -104,65 +106,66 @@ void thread_two::onReadyRead()
 			}
 		}
 
-		else if (ChannelNumber == 5)
-		{
-			if (ChannelNumber == channelCount)
-			{
-				wifi_Package.push_back(temp);
-				channelCount++;
-			}
-			else
-			{
-				channelOneFlag = false;
-				channelCount = 1;
-			}
-		}
+		//else if (ChannelNumber == 5)
+		//{
+		//	if (ChannelNumber == channelCount)
+		//	{
+		//		wifi_Package.push_back(temp);
+		//		channelCount++;
+		//	}
+		//	else
+		//	{
+		//		channelOneFlag = false;
+		//		channelCount = 1;
+		//	}
+		//}
 
-		else if (ChannelNumber == 6)
-		{
-			if (ChannelNumber == channelCount)
-			{
-				wifi_Package.push_back(temp);
-				channelCount++;
-			}
-			else
-			{
-				channelOneFlag = false;
-				channelCount = 1;
-			}
-		}
+		//else if (ChannelNumber == 6)
+		//{
+		//	if (ChannelNumber == channelCount)
+		//	{
+		//		wifi_Package.push_back(temp);
+		//		channelCount++;
+		//	}
+		//	else
+		//	{
+		//		channelOneFlag = false;
+		//		channelCount = 1;
+		//	}
+		//}
 
-		else if (ChannelNumber == 7)
-		{
-			if (ChannelNumber == channelCount)
-			{
-				wifi_Package.push_back(temp);
-				channelCount++;
-			}
-			else
-			{
-				channelOneFlag = false;
-				channelCount = 1;
-			}
-		}
+		//else if (ChannelNumber == 7)
+		//{
+		//	if (ChannelNumber == channelCount)
+		//	{
+		//		wifi_Package.push_back(temp);
+		//		channelCount++;
+		//	}
+		//	else
+		//	{
+		//		channelOneFlag = false;
+		//		channelCount = 1;
+		//	}
+		//}
 
-		else if (ChannelNumber == 8)
-		{
-			if (ChannelNumber == channelCount)
-			{
-				channelOneFlag = false;//~ 当接收到第8个通道后，回到开头
-				channelCount = 1;
-				wifi_Package.push_back(temp);
-			}
-			else
-			{
-				channelOneFlag = false;
-				channelCount = 1;
-			}
-		}
+		//else if (ChannelNumber == 8)
+		//{
+		//	if (ChannelNumber == channelCount)
+		//	{
+		//		channelOneFlag = false;//~ 当接收到第8个通道后，回到开头
+		//		channelCount = 1;
+		//		wifi_Package.push_back(temp);
+		//	}
+		//	else
+		//	{
+		//		channelOneFlag = false;
+		//		channelCount = 1;
+		//	}
+		//}
 	}
 	//Check package size
-	if (wifi_Package.size() == 8)//~ 当wifi_Package存储的以太网数据的大小为4*1000时，将该数据包传到WIFI_DATA变量中，供主线程进行读取并计算显示等
+	//if (wifi_Package.size() == 8)//~ 当wifi_Package存储的以太网数据的大小为4*1000时，将该数据包传到WIFI_DATA变量中，供主线程进行读取并计算显示等
+	if (wifi_Package.size() == 4)
 	{
 		//创建临界保护区
 		EnterCriticalSection(&g_cs2);//~ 进入临界区
@@ -203,20 +206,26 @@ bool thread_two::wifi_connect()
 
 bool thread_two::copydata_wifi(std::vector<std::vector<double>>& x)//~ 读取存储在US_DATA1变量中的数据包8*1000
 {
+	/*qDebug() << "copydata" << endl;*/
 	//创建临界保护区
 	//~ 互斥读取变量，防止各个线程之间同时访问该变量造成数据错乱；
 	//EnterCriticalSection(&g_cs);
 	if (WIFI_DATA.empty())
 	{
+		//qDebug() << "empty" << endl;
 		return false;
 	}
 
-	if (WIFI_DATA.size() == 8)
+	/*if (WIFI_DATA.size() == 8)*/
+	if (WIFI_DATA.size() == 4)
 	{
-		if (WIFI_DATA[7][1] = 8)//~ 检查二维数组US_DATA1的最后一个数据包是否为通道8
+		
+		//if (WIFI_DATA[7][1] = 8)//~ 检查二维数组US_DATA1的最后一个数据包是否为通道8
+		if (WIFI_DATA[3][1] = 4)
 		{
 			EnterCriticalSection(&g_cs2);
 			x = WIFI_DATA;//~ 把以太网采集到的4*1000的数组赋值给copydata1函数的参数，同时该函数返回bool值
+			/*qDebug() << "*****" << endl;*/
 			WIFI_DATA.clear();
 			LeaveCriticalSection(&g_cs2);
 			return true;
