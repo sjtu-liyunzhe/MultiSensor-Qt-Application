@@ -160,13 +160,13 @@
     <CustomBuild Include="EMGProcesser.h">
       <Filter>Source Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="parameters_dialog.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="parameters_dialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="qcplot.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="parameters_dialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -219,10 +219,10 @@
     <ClInclude Include="EMGDecoding\Point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_parameters_dialog.h">
+    <ClInclude Include="GeneratedFiles\ui_qcplot.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_qcplot.h">
+    <ClInclude Include="GeneratedFiles\ui_parameters_dialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

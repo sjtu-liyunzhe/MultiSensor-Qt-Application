@@ -427,7 +427,7 @@ QCplot::QCplot(QWidget *parent)
 	start_save = false;
 	save_flag = false;
 	//declare array
-	frameRate = 10;				
+	frameRate = 100;				
 	holdTime = 5;
 
 	
@@ -576,6 +576,8 @@ QCplot::QCplot(QWidget *parent)
 	EMG_Thread = new EMGProcesser(emgSerialPort);
 	EMG_Datalength = 8;
 	
+	isUpdatePlot = false;
+
 	// disGesture显示手势
 	showTrainImage_disGesture();
 	packetNum_disGesture = 0;
@@ -588,7 +590,9 @@ QCplot::QCplot(QWidget *parent)
 	// 参数设置窗口
 	parameters_window_disGesture = new Parameters_dialog(this);
 	parameters_window_disGesture->ui->parameters_trainTime->setText(QString::number(holdTime_disGesture));
-	parameters_window_disGesture->holdTime = holdTime;
+	parameters_window_disGesture->holdTime = holdTime_disGesture;
+	parameters_window_disGesture->ui->parameters_num->setText(QString::number(trialNum_disGesture));
+	parameters_window_disGesture->trialNum = trialNum_disGesture;
 } 
 
 
@@ -1605,10 +1609,13 @@ void QCplot::showEMGImage_2()
 	ui.EMG_3_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[2]);
 	ui.EMG_1_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[3]);
 
-	ui.EMG_1_plot->replot();
-	ui.EMG_2_plot->replot();
-	ui.EMG_3_plot->replot();
-	ui.EMG_4_plot->replot();
+	if (dataTabFlag)
+	{
+		ui.EMG_1_plot->replot();
+		ui.EMG_2_plot->replot();
+		ui.EMG_3_plot->replot();
+		ui.EMG_4_plot->replot();
+	}
 }
 
 void QCplot::showAmodeImage_1(std::vector<std::vector<double>> CurrentPackage)
@@ -3697,8 +3704,10 @@ void QCplot::getTrainFeature_mode1()
 				Mat temp_mat(8, 1000, CV_64FC1);
 				rawData.convertTo(temp_mat, CV_64FC1);
 				memcpy(mat, temp_mat.data, 8 * 1000 * sizeof(double));//~ 将cv::Mat类型转成double类型数组
-				SetMat("rawData", (void*)mat, 8, 1000, ep);//~ 将c++中的mat矩阵写入到MATLAB工作区中的mat_matlab矩阵
+				int ans = SetMat("rawData", (void*)mat, 8, 1000, ep);//~ 将c++中的mat矩阵写入到MATLAB工作区中的mat_matlab矩阵
+				
 				engEvalString(ep, "imageFeature=getCoefficientImageFeature(rawData)");//~ 提取A超信号特征参数到imageFeature，有48（子窗数）*1（特征参数个数）*8（通道数）=384个特征参数。是1*384的矩阵
+				qDebug() << ans;
 				engEvalString(ep, "imageFeature = imageFeature'");
 				GetMat("imageFeature", (void*)temp_imageFeature, 1, feature_col_num, ep);//~ 将MATLAB工作区中的mat_matlab矩阵赋值到c++中的mat矩阵，覆盖掉原先mat矩阵的值
 				memcpy(imageFeature.data, temp_imageFeature, 1 * feature_col_num * sizeof(double));//~ 将double类型的mat矩阵数组转成cv::Mat类型，存储到Mat A(M, M, CV_64FC1)中
@@ -4833,8 +4842,11 @@ void QCplot::updateEMGImage()
 	//this->showEMGImage_1();
 	//this->showUnionIMUImage();
 	// 改进
-	showEMGImage_2();
-	showUnionIMUImage_2();
+	if (isUpdatePlot)
+	{
+		showEMGImage_2();
+		showUnionIMUImage_2();
+	}
 }
 void QCplot::on_emg_clear_button_clicked()
 {
@@ -4847,14 +4859,15 @@ void QCplot::updateAmodeImage()
 	//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
 	//qDebug() << currentTime_str << endl;
 	//qDebug() << "update A" << endl;
-	if (dataTabFlag)
+	if (dataTabFlag && isUpdatePlot)
 	{
+		//qDebug() << "*";
 		std::vector<std::vector<double>> CurrentPackage;
 		if (wifi_Thread->copydata_wifi(CurrentPackage))
 		{
-			//QDateTime currentTime = QDateTime::currentDateTime();
-			//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
-			//qDebug() << currentTime_str << endl;
+			QDateTime currentTime = QDateTime::currentDateTime();
+			QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+			qDebug() << currentTime_str << endl;
 			//qDebug() << "*****" << endl;
 			showAmodeImage_1(CurrentPackage);
 		}
@@ -5048,6 +5061,10 @@ void QCplot::on_disGesture_start_button_clicked()
 	ui.disGesture_stop_button->setEnabled(true);
 
 	dataTabFlag = false;
+
+	holdTime_disGesture = parameters_window_disGesture->holdTime;
+	trialNum_disGesture = parameters_window_disGesture->trialNum;
+	fatherDirName_disGesture = parameters_window_disGesture->dirName;
 }
 
 void QCplot::on_disGesture_train_button_clicked()
@@ -5057,7 +5074,7 @@ void QCplot::on_disGesture_train_button_clicked()
 	// 创建文件夹及txt文件用于存储训练数据
 	QDateTime currentTime = QDateTime::currentDateTime();
 	QString strCurrentTime = currentTime.toString("dd_hh_mm_ss");
-	QString strTrainDataPath = "TrainData/" + strCurrentTime;
+	QString strTrainDataPath = fatherDirName_disGesture + "/TrainData/" + strCurrentTime;
 	trainFileName = strCurrentTime;
 	QDir dir;
 	if (!dir.exists(strTrainDataPath))
@@ -5168,7 +5185,7 @@ void QCplot::getTrainFeature_disGesture()
 				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
 			}
 		}
-		imageShowLabel_disGesture[5]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[9]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
 		imageShowLabel_disGesture[0]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
 
 		if (step > temp - frameRate)
@@ -5251,7 +5268,71 @@ void QCplot::getTrainFeature_disGesture()
 		}
 		imageShowLabel_disGesture[4]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
 		imageShowLabel_disGesture[5]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
-		if (step == 6 * temp - 1)
+		if (step > 6 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[6]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 6 * temp) && (step < 7 * temp))
+	{
+		if (step == 6 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[5]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[6]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step > 7 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[7]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 7 * temp) && (step < 8 * temp))
+	{
+		if (step == 7 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[6]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[7]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step > 8 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[8]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 8 * temp) && (step < 9 * temp))
+	{
+		if (step == 8 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[7]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[8]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step > 9 * temp - frameRate)
+		{
+			imageShowLabel_disGesture[9]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+		}
+	}
+	else if ((step >= 9 * temp) && (step < 10 * temp))
+	{
+		if (step == 9 * temp)
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+			}
+		}
+		imageShowLabel_disGesture[8]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[9]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+		if (step == 10 * temp - 1)
 		{
 			//~ 提示休息10s
 			ui.textBrowser->setText("Rest 10s");
@@ -5264,7 +5345,7 @@ void QCplot::getTrainFeature_disGesture()
 	
 	if (packetNum_disGesture >= frameRate * holdTime_disGesture * trialNum_disGesture * classNum_disGesture)
 	{
-		imageShowLabel_mode1[5]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_mode1[9]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
 		imageShowLabel_disGesture[0]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
 		ui.disGesture_train_button->setEnabled(true);
 
@@ -5440,4 +5521,16 @@ void QCplot::showEMGpredictImg(int index)
 void QCplot::on_disGesture_parameters_button_clicked()
 {
 	parameters_window_disGesture->show();
+}
+void QCplot::on_multiData_start_button_clicked()
+{
+	isUpdatePlot = true;
+	ui.multiData_start_button->setEnabled(false);
+	ui.multiData_stop_button->setEnabled(true);
+}
+void QCplot::on_multiData_stop_button_clicked()
+{
+	isUpdatePlot = false;
+	ui.multiData_start_button->setEnabled(true);
+	ui.multiData_stop_button->setEnabled(false);
 }

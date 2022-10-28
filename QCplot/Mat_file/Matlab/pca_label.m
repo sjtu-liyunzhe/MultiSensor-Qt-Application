@@ -11,7 +11,7 @@ fr_num = NaN;
 
 s=pwd;%~ 获取当前.m文件所在路径
 
-us_dir  = ('E:\Code\腕手同步识别代码\QT_2threads_36(WiFi)\QCplot\Mat_file');%~ 超声信号文件路径，在上位机软件中的话，是放在上一级目录下
+us_dir  = ('E:\2021-2022\Upper Software\QT_2threads_36_wifi_SPC(WiFi)_1220\QCplot\Mat_file');%~ 超声信号文件路径，在上位机软件中的话，是放在上一级目录下
 cd (us_dir)
 % dataglove=load('dataglove.txt');%~ 读取数据手套的值
 

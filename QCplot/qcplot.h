@@ -317,7 +317,8 @@ private:
 	void showAmodeImage_3();
 	void showAmodeImage_4();
 	
-	
+	// multiDataœ‘ æ
+	bool isUpdatePlot;
 	// DisGesture
 	Parameters_dialog* parameters_window_disGesture;
 	void showTrainImage_disGesture();
@@ -349,7 +350,7 @@ private:
 	deque<int> EMGpredictQue;
 	vector<QImage> disImgArr;
 	void showEMGpredictImg(int index);
-
+	QString fatherDirName_disGesture;
 
 
 	void saveAmodeData_disGesture(std::vector<std::vector<double>> CurrentPackage);
@@ -485,6 +486,10 @@ private slots:
 	void updateAmodeImage();
 	void on_saveData_button_clicked();
 	void on_clearData_button_clicked();
+
+	// multiDataœ‘ æ
+	void on_multiData_start_button_clicked();
+	void on_multiData_stop_button_clicked();
 
 	// disGesture
 	void on_disGesture_start_button_clicked();

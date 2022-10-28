@@ -18,6 +18,7 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPushButton>
 
 QT_BEGIN_NAMESPACE
 
@@ -30,6 +31,9 @@ public:
     QLineEdit *parameters_num;
     QLineEdit *parameters_trainTime;
     QLabel *label_3;
+    QLabel *label_4;
+    QLineEdit *parameters_dirName;
+    QPushButton *parameters_getDirName;
 
     void setupUi(QDialog *Parameters_dialog)
     {
@@ -43,19 +47,28 @@ public:
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         label_2 = new QLabel(Parameters_dialog);
         label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(70, 80, 54, 20));
+        label_2->setGeometry(QRect(10, 100, 54, 20));
         label = new QLabel(Parameters_dialog);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(70, 40, 54, 20));
+        label->setGeometry(QRect(10, 60, 54, 20));
         parameters_num = new QLineEdit(Parameters_dialog);
         parameters_num->setObjectName(QStringLiteral("parameters_num"));
-        parameters_num->setGeometry(QRect(130, 80, 50, 20));
+        parameters_num->setGeometry(QRect(70, 100, 50, 20));
         parameters_trainTime = new QLineEdit(Parameters_dialog);
         parameters_trainTime->setObjectName(QStringLiteral("parameters_trainTime"));
-        parameters_trainTime->setGeometry(QRect(130, 40, 50, 20));
+        parameters_trainTime->setGeometry(QRect(70, 60, 50, 20));
         label_3 = new QLabel(Parameters_dialog);
         label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setGeometry(QRect(190, 40, 54, 20));
+        label_3->setGeometry(QRect(130, 60, 54, 20));
+        label_4 = new QLabel(Parameters_dialog);
+        label_4->setObjectName(QStringLiteral("label_4"));
+        label_4->setGeometry(QRect(10, 20, 54, 20));
+        parameters_dirName = new QLineEdit(Parameters_dialog);
+        parameters_dirName->setObjectName(QStringLiteral("parameters_dirName"));
+        parameters_dirName->setGeometry(QRect(70, 20, 151, 21));
+        parameters_getDirName = new QPushButton(Parameters_dialog);
+        parameters_getDirName->setObjectName(QStringLiteral("parameters_getDirName"));
+        parameters_getDirName->setGeometry(QRect(230, 20, 75, 23));
 
         retranslateUi(Parameters_dialog);
         QObject::connect(buttonBox, SIGNAL(accepted()), Parameters_dialog, SLOT(accept()));
@@ -70,6 +83,8 @@ public:
         label_2->setText(QApplication::translate("Parameters_dialog", "\351\207\215\345\244\215\346\254\241\346\225\260", 0));
         label->setText(QApplication::translate("Parameters_dialog", "\350\256\255\347\273\203\346\227\266\351\225\277", 0));
         label_3->setText(QApplication::translate("Parameters_dialog", "s", 0));
+        label_4->setText(QApplication::translate("Parameters_dialog", "\346\226\207\344\273\266\347\256\241\347\220\206", 0));
+        parameters_getDirName->setText(QApplication::translate("Parameters_dialog", "\346\265\217\350\247\210\346\226\207\344\273\266\345\244\271", 0));
     } // retranslateUi
 
 };
