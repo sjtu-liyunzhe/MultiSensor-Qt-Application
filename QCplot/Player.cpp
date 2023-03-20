@@ -48,9 +48,11 @@ void Player::run()
 {
 	while(!stop)
 	{																			//设置一个标志来控制死循环的退出
-
 		while (1)
 		{
+			//QDateTime currentTime = QDateTime::currentDateTime();
+			//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+			//qDebug() << currentTime_str;
 			if (pstate == FREE)
 			{
 				emit showImage();									
@@ -80,7 +82,7 @@ void Player::run()
 				emit predictImage_disDesture();
 			}
 			//this->msleep(100);		// 为了适应肌电分窗设置的时间
-			this->msleep(10);
+			this->msleep(20);
 			if (stop)
 			{
 				break;

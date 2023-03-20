@@ -339,7 +339,8 @@ private:
 	int holdTime_disGesture;
 	QFile qfSaveAmodeFile[4], qfSaveEMGFile[4], qfSaveIMUFile[4],
 		qfSaveAmodePacFile, qfSaveEMGPacFile, qfSaveIMUPacFile,
-		qfSaveEMGLabelFile[4];
+		qfSaveEMGLabelFile[4], qfSaveIMULabelFile[4],
+		qfSaveAmodeTimeFile[4], qfSaveAmodeLabelFile[4];
 	vector<int> disGestureTrainOrder, disGesturePredictOrder;
 	int time_disGesturePredict, num_disGesturePredict, disGesturePredictTrial;
 	int timeWindow, strideWindow;
@@ -403,8 +404,9 @@ public:
 
 	QTimer refreshTime;
 	int showCount;
-	vector<vector<vector<double>::size_type>> emgLabel;
-
+	vector<vector<long long>> emgLabel;
+	vector<vector<long long>> imuLabel;
+	vector<vector<int>> AmodeLabel;
 	
 private:
 	parametersSettings currentParametersSettings;
@@ -490,7 +492,7 @@ private slots:
 	// multiDataœ‘ æ
 	void on_multiData_start_button_clicked();
 	void on_multiData_stop_button_clicked();
-
+	void on_multiData_capture_button_clicked();
 	// disGesture
 	void on_disGesture_start_button_clicked();
 	void on_disGesture_train_button_clicked();
@@ -503,6 +505,7 @@ private slots:
 	void on_disGesture_predict_button_clicked();
 	void getPredictFeature_disGesture();
 	void on_disGesture_parameters_button_clicked();
+	void getTrainFeature_disGesture_A_trigger();
 };
 
 #endif // QCPLOT_H

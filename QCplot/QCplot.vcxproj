@@ -171,6 +171,7 @@
     <ClCompile Include="EMGDecoding\EMGTrain.cpp" />
     <ClCompile Include="EMGProcesser.cpp" />
     <ClCompile Include="Feature.cpp" />
+    <ClCompile Include="Filter.cpp" />
     <ClCompile Include="FiveDTglove.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_Delsys_SDK.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -247,6 +248,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="IMUProcesser.cpp" />
+    <ClCompile Include="IMU_Calculator.cpp" />
     <ClCompile Include="LDA_Bayesian.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parameters_dialog.cpp" />
@@ -321,6 +323,7 @@
     <ClInclude Include="EMGDecoding\KDTree.h" />
     <ClInclude Include="EMGDecoding\Point.h" />
     <ClInclude Include="Feature.h" />
+    <ClInclude Include="Filter.h" />
     <ClInclude Include="FiveDTglove.h" />
     <ClInclude Include="GeneratedFiles\ui_parameters_dialog.h" />
     <ClInclude Include="GeneratedFiles\ui_qcplot.h" />
@@ -361,6 +364,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DNOMINMAX -DWIN32_LEAN_AND_MEAN -D_AFXDLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SENSORS_LIB -DQT_SERIALPORT_LIB -DQT_UITOOLS_LIB -DQT_WIDGETS_LIB -DQT_DLL -D%(PreprocessorDefinitions) "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)" "-IE:\Program Files\WpdPack\Include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtANGLE" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtSensors" "-I$(QTDIR)\include\QtSerialPort" "-I$(QTDIR)\include\QtUiTools" "-I$(QTDIR)\include\QtWidgets"</Command>
     </CustomBuild>
+    <ClInclude Include="IMU_Calculator.h" />
     <ClInclude Include="stdbool.h" />
     <ClInclude Include="VE_Comms.h" />
     <CustomBuild Include="wifi_Thread.h">

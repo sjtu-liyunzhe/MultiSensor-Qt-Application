@@ -427,7 +427,7 @@ QCplot::QCplot(QWidget *parent)
 	start_save = false;
 	save_flag = false;
 	//declare array
-	frameRate = 100;				
+	frameRate = 20;				
 	holdTime = 5;
 
 	
@@ -618,7 +618,9 @@ void QCplot::initialSlots()
 	//~ mode2
 	//QObject::connect(myPlayer, SIGNAL(trainImage_mode2()), this, SLOT(getTrainFeature_mode2()), Qt::BlockingQueuedConnection);
 	// disGesture
-	QObject::connect(myPlayer, SIGNAL(trainImage_disDesture()), this, SLOT(getTrainFeature_disGesture()), Qt::BlockingQueuedConnection);
+	//QObject::connect(myPlayer, SIGNAL(trainImage_disDesture()), this, SLOT(getTrainFeature_disGesture()), Qt::BlockingQueuedConnection);
+	//QObject::connect(myPlayer, SIGNAL(trainImage_disDesture()), this, SLOT(getTrainFeature_disGesture_A_trigger()), Qt::BlockingQueuedConnection);
+
 	QObject::connect(myPlayer, SIGNAL(predictImage_disDesture()), this, SLOT(getPredictFeature_disGesture()), Qt::BlockingQueuedConnection);
 }
 
@@ -925,23 +927,23 @@ void QCplot::initial()
 	ui.IMU_1_plot->graph(0)->setPen(QPen(Qt::black));
 	//ui.IMU_1_plot->graph(0)->setData(IMU_x, IMU_y);
 	ui.IMU_1_plot->graph(0)->rescaleAxes();
-	ui.IMU_1_plot->graph(0)->setName("Roll");
+	ui.IMU_1_plot->graph(0)->setName("Accx");
 	ui.IMU_1_plot->addGraph();
 	ui.IMU_1_plot->graph(1)->setPen(QPen(Qt::blue));
 	//ui.IMU_1_plot->graph(1)->setData(IMU_x, IMU_y);
 	ui.IMU_1_plot->graph(1)->rescaleAxes();
-	ui.IMU_1_plot->graph(1)->setName("Pitch");
+	ui.IMU_1_plot->graph(1)->setName("Accy");
 	ui.IMU_1_plot->addGraph();
 	ui.IMU_1_plot->graph(2)->setPen(QPen(Qt::red));
 	//ui.IMU_1_plot->graph(2)->setData(IMU_x, IMU_y);
 	ui.IMU_1_plot->graph(2)->rescaleAxes();
-	ui.IMU_1_plot->graph(2)->setName("Yaw");
+	ui.IMU_1_plot->graph(2)->setName("Accz");
 
 	ui.IMU_1_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	//ui.IMU_1_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_1_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_1_plot->xAxis->setRange(0, 1000);
-	ui.IMU_1_plot->yAxis->setRange(-180, 180);
+	ui.IMU_1_plot->yAxis->setRange(-20, 20);
 	//ui.IMU_1_plot->yAxis->setTickLabels(false);
 	ui.IMU_1_plot->plotLayout()->insertRow(0);
 	ui.IMU_1_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_1_plot, "CH_1"));
@@ -955,23 +957,23 @@ void QCplot::initial()
 	ui.IMU_2_plot->graph(0)->setPen(QPen(Qt::black));
 	//ui.IMU_2_plot->graph(0)->setData(IMU_x, IMU_y);
 	ui.IMU_2_plot->graph(0)->rescaleAxes();
-	ui.IMU_2_plot->graph(0)->setName("Roll");
+	ui.IMU_2_plot->graph(0)->setName("Accx");
 	ui.IMU_2_plot->addGraph();
 	ui.IMU_2_plot->graph(1)->setPen(QPen(Qt::blue));
 	//ui.IMU_2_plot->graph(1)->setData(IMU_x, IMU_y);
 	ui.IMU_2_plot->graph(1)->rescaleAxes();
-	ui.IMU_2_plot->graph(1)->setName("Pitch");
+	ui.IMU_2_plot->graph(1)->setName("Accy");
 	ui.IMU_2_plot->addGraph();
 	ui.IMU_2_plot->graph(2)->setPen(QPen(Qt::red));
 	//ui.IMU_2_plot->graph(2)->setData(IMU_x, IMU_y);
 	ui.IMU_2_plot->graph(2)->rescaleAxes();
-	ui.IMU_2_plot->graph(2)->setName("Yaw");
+	ui.IMU_2_plot->graph(2)->setName("Accz");
 
 	ui.IMU_2_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_2_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_2_plot->xAxis->setRange(0, 1000);
-	ui.IMU_2_plot->yAxis->setRange(-180, 180);
+	ui.IMU_2_plot->yAxis->setRange(-20, 20);
 	//ui.IMU_2_plot->yAxis->setTickLabels(false);
 	ui.IMU_2_plot->plotLayout()->insertRow(0);
 	ui.IMU_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_2_plot, "CH_2"));
@@ -985,23 +987,23 @@ void QCplot::initial()
 	ui.IMU_3_plot->graph(0)->setPen(QPen(Qt::black));
 	//ui.IMU_3_plot->graph(0)->setData(IMU_x, IMU_y);
 	ui.IMU_3_plot->graph(0)->rescaleAxes();
-	ui.IMU_3_plot->graph(0)->setName("Roll");
+	ui.IMU_3_plot->graph(0)->setName("Accx");
 	ui.IMU_3_plot->addGraph();
 	ui.IMU_3_plot->graph(1)->setPen(QPen(Qt::blue));
 	//ui.IMU_3_plot->graph(1)->setData(IMU_x, IMU_y);
 	ui.IMU_3_plot->graph(1)->rescaleAxes();
-	ui.IMU_3_plot->graph(1)->setName("Pitch");
+	ui.IMU_3_plot->graph(1)->setName("Accy");
 	ui.IMU_3_plot->addGraph();
 	ui.IMU_3_plot->graph(2)->setPen(QPen(Qt::red));
 	//ui.IMU_3_plot->graph(2)->setData(IMU_x, IMU_y);
 	ui.IMU_3_plot->graph(2)->rescaleAxes();
-	ui.IMU_3_plot->graph(2)->setName("Yaw");
+	ui.IMU_3_plot->graph(2)->setName("Accz");
 
 	ui.IMU_3_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_3_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_3_plot->xAxis->setRange(0, 1000);
-	ui.IMU_3_plot->yAxis->setRange(-180, 180);
+	ui.IMU_3_plot->yAxis->setRange(-20, 20);
 	//ui.IMU_3_plot->yAxis->setTickLabels(false);
 	ui.IMU_3_plot->plotLayout()->insertRow(0);
 	ui.IMU_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_3_plot, "CH_3"));
@@ -1015,23 +1017,23 @@ void QCplot::initial()
 	ui.IMU_4_plot->graph(0)->setPen(QPen(Qt::black));
 	//ui.IMU_4_plot->graph(0)->setData(IMU_x, IMU_y);
 	ui.IMU_4_plot->graph(0)->rescaleAxes();
-	ui.IMU_4_plot->graph(0)->setName("Roll");
+	ui.IMU_4_plot->graph(0)->setName("Accx");
 	ui.IMU_4_plot->addGraph();
 	ui.IMU_4_plot->graph(1)->setPen(QPen(Qt::blue));
 	//ui.IMU_4_plot->graph(1)->setData(IMU_x, IMU_y);
 	ui.IMU_4_plot->graph(1)->rescaleAxes();
-	ui.IMU_4_plot->graph(1)->setName("Pitch");
+	ui.IMU_4_plot->graph(1)->setName("Accy");
 	ui.IMU_4_plot->addGraph();
 	ui.IMU_4_plot->graph(2)->setPen(QPen(Qt::red));
 	//ui.IMU_4_plot->graph(2)->setData(IMU_x, IMU_y);
 	ui.IMU_4_plot->graph(2)->rescaleAxes();
-	ui.IMU_4_plot->graph(2)->setName("Roll");
+	ui.IMU_4_plot->graph(2)->setName("Accz");
 
 	ui.IMU_4_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	//ui.IMU_2_plot->xAxis->setLabel("1/20 us");
 	ui.IMU_4_plot->yAxis->setLabel("Amplitude");
 	ui.IMU_4_plot->xAxis->setRange(0, 1000);
-	ui.IMU_4_plot->yAxis->setRange(-180, 180);
+	ui.IMU_4_plot->yAxis->setRange(-20, 20);
 	//ui.IMU_4_plot->yAxis->setTickLabels(false);
 	ui.IMU_4_plot->plotLayout()->insertRow(0);
 	ui.IMU_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.IMU_4_plot, "CH_4"));
@@ -1049,7 +1051,7 @@ void QCplot::initial()
 	ui.EMG_1_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_1_plot->yAxis->setLabel("Amplitude");
 	ui.EMG_1_plot->xAxis->setRange(0, 10000);
-	ui.EMG_1_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_1_plot->yAxis->setRange(-5000, 5000);
 	ui.EMG_1_plot->plotLayout()->insertRow(0);
 	ui.EMG_1_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_1_plot, "CH_1"));
 
@@ -1065,9 +1067,9 @@ void QCplot::initial()
 	ui.EMG_2_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_2_plot->yAxis->setLabel("Amplitude");
 	ui.EMG_2_plot->xAxis->setRange(0, 10000);
-	ui.EMG_2_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_2_plot->yAxis->setRange(-5000, 5000);
 	ui.EMG_2_plot->plotLayout()->insertRow(0);
-	ui.EMG_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_2_plot, "CH_2"));
+	ui.EMG_2_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_2_plot, "CH_3"));
 
 	ui.EMG_3_plot->legend->setFont(font);
 	ui.EMG_3_plot->legend->setVisible(true);
@@ -1081,9 +1083,9 @@ void QCplot::initial()
 	ui.EMG_3_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_3_plot->yAxis->setLabel("Amplitude");
 	ui.EMG_3_plot->xAxis->setRange(0, 10000);
-	ui.EMG_3_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_3_plot->yAxis->setRange(-5000, 5000);
 	ui.EMG_3_plot->plotLayout()->insertRow(0);
-	ui.EMG_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_3_plot, "CH_3"));
+	ui.EMG_3_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_3_plot, "CH_2"));
 
 	ui.EMG_4_plot->legend->setFont(font);
 	ui.EMG_4_plot->legend->setVisible(true);
@@ -1097,7 +1099,7 @@ void QCplot::initial()
 	ui.EMG_4_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.EMG_4_plot->yAxis->setLabel("Amplitude");
 	ui.EMG_4_plot->xAxis->setRange(0, 10000);
-	ui.EMG_4_plot->yAxis->setRange(-2000, 2000);
+	ui.EMG_4_plot->yAxis->setRange(-5000, 5000);
 	ui.EMG_4_plot->plotLayout()->insertRow(0);
 	ui.EMG_4_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.EMG_4_plot, "CH_4"));
 	
@@ -1194,7 +1196,7 @@ void QCplot::initial()
 	ui.disGesture_EMG_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.disGesture_EMG_plot->yAxis->setLabel("Amplitude");
 	ui.disGesture_EMG_plot->xAxis->setRange(0, 10000);
-	ui.disGesture_EMG_plot->yAxis->setRange(-2000, 2000);
+	ui.disGesture_EMG_plot->yAxis->setRange(-5000, 5000);
 	ui.disGesture_EMG_plot->plotLayout()->insertRow(0);
 	ui.disGesture_EMG_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.disGesture_EMG_plot, "CH_1"));
 
@@ -1206,20 +1208,20 @@ void QCplot::initial()
 	ui.disGesture_IMU_plot->addGraph();
 	ui.disGesture_IMU_plot->graph(0)->setPen(QPen(Qt::black));
 	ui.disGesture_IMU_plot->graph(0)->rescaleAxes();
-	ui.disGesture_IMU_plot->graph(0)->setName("Roll");
+	ui.disGesture_IMU_plot->graph(0)->setName("Accx");
 	ui.disGesture_IMU_plot->addGraph();
 	ui.disGesture_IMU_plot->graph(1)->setPen(QPen(Qt::blue));
 	ui.disGesture_IMU_plot->graph(1)->rescaleAxes();
-	ui.disGesture_IMU_plot->graph(1)->setName("Pitch");
+	ui.disGesture_IMU_plot->graph(1)->setName("Accy");
 	ui.disGesture_IMU_plot->addGraph();
 	ui.disGesture_IMU_plot->graph(2)->setPen(QPen(Qt::red));
 	ui.disGesture_IMU_plot->graph(2)->rescaleAxes();
-	ui.disGesture_IMU_plot->graph(2)->setName("Yaw");
+	ui.disGesture_IMU_plot->graph(2)->setName("Accz");
 
 	ui.disGesture_IMU_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 	ui.disGesture_IMU_plot->yAxis->setLabel("Amplitude");
 	ui.disGesture_IMU_plot->xAxis->setRange(0, 1000);
-	ui.disGesture_IMU_plot->yAxis->setRange(-180, 180);
+	ui.disGesture_IMU_plot->yAxis->setRange(-20, 20);
 	ui.disGesture_IMU_plot->plotLayout()->insertRow(0);
 	ui.disGesture_IMU_plot->plotLayout()->addElement(0, 0, new QCPTextElement(ui.disGesture_IMU_plot, "CH_1"));
 
@@ -1607,7 +1609,7 @@ void QCplot::showEMGImage_2()
 	ui.EMG_1_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[0]);
 	ui.EMG_2_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[1]);
 	ui.EMG_3_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[2]);
-	ui.EMG_1_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[3]);
+	ui.EMG_4_plot->graph(0)->setData(EMG_plot_x, EMG_plot_y_array[3]);
 
 	if (dataTabFlag)
 	{
@@ -4412,7 +4414,7 @@ void QCplot::emgSerialPortInit()
 	//connect(emgSerialPort, SIGNAL(readyRead()), this, SLOT(updatePlayerUI()));
 	// A mode
 	QObject::connect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(updateAmodeImage()));
-	QObject::connect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(updateDisGestureAmodeImage()));
+	//QObject::connect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(updateDisGestureAmodeImage()));
 	key_EMG_1 = 0;
 	key_EMG_1 = 0;
 	showCount = 0;
@@ -4867,8 +4869,9 @@ void QCplot::updateAmodeImage()
 		{
 			QDateTime currentTime = QDateTime::currentDateTime();
 			QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
-			qDebug() << currentTime_str << endl;
+			//qDebug() << currentTime_str << endl;
 			//qDebug() << "*****" << endl;
+			//qDebug() << CurrentPackage[0].size();
 			showAmodeImage_1(CurrentPackage);
 		}
 	}
@@ -4928,14 +4931,25 @@ void QCplot::saveAmodeData_disGesture(std::vector<std::vector<double>> CurrentPa
 	for (int i = 0; i != channelNums; ++i)
 	{
 		std::vector<double> temp(CurrentPackage[i].begin() + 2, CurrentPackage[i].end() - 1);
+		//qDebug() << temp.size();
 		int channelNum = CurrentPackage[i][1];
+		//if (!qfSaveAmodeFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text))
+		//{
+		//	QMessageBox::warning(this, tr("ERROR"), tr("Fail to open file"));
+		//	return;
+		//}
 		if (channelNum == (i + 1))
 		{
 			QTextStream out(&qfSaveAmodeFile[i]);
+			QTextStream out_time(&qfSaveAmodeTimeFile[i]);
+			QDateTime currentTime = QDateTime::currentDateTime();
+			QString strCurrentTime = currentTime.toString("dd_hh_mm_ss");
+			out_time << strCurrentTime << endl;
 			for (auto it = temp.begin(); it != temp.end(); ++it)
 			{
-				out << *it << endl;
+				out << *it << " ";
 			}
+			out << endl;
 		}
 	}
 }
@@ -4979,7 +4993,42 @@ void QCplot::saveEMGData_disGesture()
 
 void QCplot::saveIMUData_disGesture()
 {
-	
+	for (int i = 0; i != 4; ++i)
+	{
+		auto ptr = &EMG_Thread->imuBuffer->vectorArray[i][0];
+		auto ptr_1 = &EMG_Thread->imuBuffer->vectorArray[i][1];
+		auto ptr_2 = &EMG_Thread->imuBuffer->vectorArray[i][2];
+		auto label_ptr = &imuLabel[i];
+		if (!qfSaveIMUFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text) ||
+			!qfSaveIMULabelFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text))
+		{
+			QMessageBox::warning(this, tr("错误"), tr("打开文件夹失败"));
+			return;
+		}
+		else
+		{
+			QTextStream out(&qfSaveIMUFile[i]);
+			for (auto it = ptr->begin(), it_1 = ptr_1->begin(), it_2 = ptr_2->begin();
+				it != ptr->end(); ++it, ++it_1, ++it_2)
+			{
+				out << *it << " " << *it_1 << " " << *it_2 << endl;
+			}
+			qfSaveIMUFile[i].close();
+			QTextStream out_label(&qfSaveIMULabelFile[i]);
+			for (auto it = label_ptr->begin(); it != label_ptr->end(); ++it)
+			{
+				out_label << *it << endl;
+			}
+			qfSaveIMULabelFile[i].close();
+		}
+	}
+	auto ptr_pac = &EMG_Thread->imuBuffer->packageNumArray;
+	QTextStream out_pac(&qfSaveIMUPacFile);
+	for (auto it = ptr_pac->begin(); it != ptr_pac->end(); ++it)
+	{
+		out_pac << *it << endl;
+	}
+	qfSaveIMUPacFile.close();
 }
 
 
@@ -5008,6 +5057,8 @@ void QCplot::showTrainImage_disGesture()
 	imageLaoutArray.push_back(ui.disGesture_layout_9);
 	imageLaoutArray.push_back(ui.disGesture_layout_10);
 	imageLaoutArray.push_back(ui.disGesture_layout_11);
+
+	//reverse(imageLaoutArray.begin(), imageLaoutArray.end());
 	QDir dir("gesture-disGesture");
 	dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 	dir.setSorting(QDir::Name | QDir::NoSort);
@@ -5041,12 +5092,15 @@ void QCplot::showTrainImage_disGesture()
 		labelTrainImage->show();
 		imageShowLabel_disGesture.push_back(labelTrainImage);
 	}
+	//reverse(imageShowLabel_disGesture.begin(), imageShowLabel_disGesture.end());
 }
 //void QCplot::show(
 void QCplot::on_disGesture_start_button_clicked()
 {
 	// 初始化标签vector
 	emgLabel.resize(4);
+	imuLabel.resize(4);
+	AmodeLabel.resize(4);
 	if (myPlayer->isStop())
 	{
 		myPlayer->threadStart();
@@ -5060,15 +5114,19 @@ void QCplot::on_disGesture_start_button_clicked()
 	ui.disGesture_train_button->setEnabled(true);
 	ui.disGesture_stop_button->setEnabled(true);
 
-	dataTabFlag = false;
+	//dataTabFlag = false;
 
 	holdTime_disGesture = parameters_window_disGesture->holdTime;
 	trialNum_disGesture = parameters_window_disGesture->trialNum;
+	if(parameters_window_disGesture->dirName.size() > 0)
 	fatherDirName_disGesture = parameters_window_disGesture->dirName;
 }
 
 void QCplot::on_disGesture_train_button_clicked()
 {
+	ui.disGesture_progressBar_1->setMinimum(0);
+	ui.disGesture_progressBar_1->setMaximum(frameRate * holdTime_disGesture * trialNum_disGesture * classNum_disGesture);
+	ui.disGesture_progressBar_1->setValue(0);
 
 	ui.disGesture_train_button->setEnabled(false);
 	// 创建文件夹及txt文件用于存储训练数据
@@ -5095,14 +5153,23 @@ void QCplot::on_disGesture_train_button_clicked()
 		qfSaveAmodeFile[i].setFileName(tempPath + "/Amode " + strCurrentTime + " Exp.txt");
 		qfSaveEMGFile[i].setFileName(tempPath + "/EMG " + strCurrentTime + " Exp.txt");
 		qfSaveIMUFile[i].setFileName(tempPath + "/IMU " + strCurrentTime + " Exp.txt");
+
 		qfSaveEMGLabelFile[i].setFileName(tempPath + "/EMG_Label " + strCurrentTime + " Exp.txt");
+		qfSaveIMULabelFile[i].setFileName(tempPath + "/IMU_Label " + strCurrentTime + " Exp.txt");
+		
+		qfSaveAmodeTimeFile[i].setFileName(tempPath + "/Amode_Time " + strCurrentTime + " Exp.txt");
+		qfSaveAmodeLabelFile[i].setFileName(tempPath + "/Amode_Label " + strCurrentTime + " Exp.txt");
+
 		qfSaveAmodeFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+		qfSaveAmodeTimeFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
 		//qfSaveEMGFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
-		qfSaveIMUFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
+		//qfSaveIMUFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
 	
 		EMG_Thread->emgBuffer->vectorArray[i].clear();
-		//if(i != 3)
-		//	EMG_Thread->imuBuffer->vectorArray[i].clear();
+
+		EMG_Thread->imuBuffer->vectorArray[i][0].clear();
+		EMG_Thread->imuBuffer->vectorArray[i][1].clear();
+		EMG_Thread->imuBuffer->vectorArray[i][2].clear();
 	}
 	qfSaveAmodePacFile.setFileName(strTrainDataPath + "/APAC " + strCurrentTime + " Exp.txt");
 	qfSaveEMGPacFile.setFileName(strTrainDataPath + "/EPAC " + strCurrentTime + " Exp.txt");
@@ -5112,7 +5179,18 @@ void QCplot::on_disGesture_train_button_clicked()
 	qfSaveEMGPacFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
 	qfSaveIMUPacFile.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text);
 	
-	myPlayer->threadTrain_disDesture();
+	packetNum_disGesture = 0;
+	emgLabel.resize(4);
+	imuLabel.resize(4);
+	AmodeLabel.resize(4);
+	for (int i = 0; i < 4; ++i)
+	{
+		emgLabel[i].clear();
+		imuLabel[i].clear();
+		AmodeLabel[i].clear();
+	}
+	//myPlayer->threadTrain_disDesture();
+	QObject::connect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(getTrainFeature_disGesture_A_trigger()));
 }
 
 void QCplot::on_disGesture_stop_button_clicked()
@@ -5182,7 +5260,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[9]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5199,7 +5279,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[0]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5215,7 +5297,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[1]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5231,7 +5315,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[2]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5247,7 +5333,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[3]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5263,7 +5351,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[4]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5279,7 +5369,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[5]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5295,7 +5387,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[6]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5311,7 +5405,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[7]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5327,7 +5423,9 @@ void QCplot::getTrainFeature_disGesture()
 		{
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 		imageShowLabel_disGesture[8]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
@@ -5338,14 +5436,16 @@ void QCplot::getTrainFeature_disGesture()
 			ui.textBrowser->setText("Rest 10s");
 			for (auto i = 0; i != 4; ++i)
 			{
-				emgLabel[i].push_back(EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+				imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+				AmodeLabel[i].push_back(packetNum_disGesture);
 			}
 		}
 	}
 	
 	if (packetNum_disGesture >= frameRate * holdTime_disGesture * trialNum_disGesture * classNum_disGesture)
 	{
-		imageShowLabel_mode1[9]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+		imageShowLabel_disGesture[9]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
 		imageShowLabel_disGesture[0]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
 		ui.disGesture_train_button->setEnabled(true);
 
@@ -5359,13 +5459,14 @@ void QCplot::getTrainFeature_disGesture()
 		saveIMUData_disGesture();
 
 
+
 		// kNN分类训练
-		ui.textBrowser->setText("Start Trainning!");
-		EMGTrain* train = new EMGTrain();
-		train->readData(trainFileName);
-		train->computeFeature();
-		KNN_model = train->myKNNTrain();
-		ui.textBrowser->setText("Complete!");
+		//ui.textBrowser->setText("Start Trainning!");
+		//EMGTrain* train = new EMGTrain();
+		//train->readData(trainFileName);
+		//train->computeFeature();
+		//KNN_model = train->myKNNTrain();
+		//ui.textBrowser->setText("Complete!");
 
 
 		myPlayer->threadFree();
@@ -5533,4 +5634,309 @@ void QCplot::on_multiData_stop_button_clicked()
 	isUpdatePlot = false;
 	ui.multiData_start_button->setEnabled(true);
 	ui.multiData_stop_button->setEnabled(false);
+}
+
+void QCplot::on_multiData_capture_button_clicked()
+{
+	saveEMGData_disGesture();
+	saveIMUData_disGesture();
+}
+
+void QCplot::getTrainFeature_disGesture_A_trigger()
+{
+	//string sAmode_channel = ui.disGesture_Amode_comboBox->currentText().toStdString();
+	//int iAmode_channel = static_cast<int>(*(sAmode_channel.end() - 1) - '0');
+	//if (!ui.disGesture_start_button->isEnabled())
+	//{
+	//	if (iAmode_channel <= 4)
+	//	{
+	//		showDisGestureAmodeImage(iAmode_channel);
+	//	}
+	//}555  0
+
+	Mat rawData(8, 1000, CV_32FC1);
+	std::vector<std::vector<double>> CurrentPackage;
+	//QDateTime currentTime = QDateTime::currentDateTime();
+	//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+	//qDebug() << currentTime_str << endl;
+	if (p->copydata1(CurrentPackage) == true || wifi_Thread->copydata_wifi(CurrentPackage) == true)//~ 读取A超设备传的数据
+	{
+		//qDebug() << "*" << endl;
+		//QDateTime currentTime = QDateTime::currentDateTime();
+		//QString currentTime_str = currentTime.toString("dd_hh_mm_ss.zzz");
+		//qDebug() << currentTime_str << endl;
+
+		for (int i = 0; i < CurrentPackage.size(); i++)
+		{
+			for (int j = 0; j < 1000; j++)
+
+			{
+				rawData.at<float>(i, j) = float(CurrentPackage[i][j]);
+			}
+		}
+		if ((rawData.rows == 8) && (rawData.at<float>(0, 1) == 1))
+		{
+			//~ 训练过程中，保存A超原始数据
+			Mat saveData;
+			rawData.convertTo(saveData, CV_8UC1);
+			//saveimage(saveData);
+			saveAmodeData_disGesture(CurrentPackage);
+
+			if (engine_is_open)
+			{
+				//~ 调用MATLAB引擎，对rawData（8*1000）进行滤波和特征提取等操作，输出imageFeature（1*feature_col_num）
+				Mat imageFeature(1, feature_col_num, CV_64FC1);
+				double temp_imageFeature[1][feature_col_num];//~ 暂存imageFeature的数据
+				double mat[8][1000];//~ 暂存rawData数据
+				Mat temp_mat(8, 1000, CV_64FC1);
+				rawData.convertTo(temp_mat, CV_64FC1);
+				memcpy(mat, temp_mat.data, 8 * 1000 * sizeof(double));//~ 将cv::Mat类型转成double类型数组
+				int ans = SetMat("rawData", (void*)mat, 8, 1000, ep);//~ 将c++中的mat矩阵写入到MATLAB工作区中的mat_matlab矩阵
+
+				engEvalString(ep, "imageFeature=getCoefficientImageFeature(rawData)");//~ 提取A超信号特征参数到imageFeature，有48（子窗数）*1（特征参数个数）*8（通道数）=384个特征参数。是1*384的矩阵
+				//qDebug() << ans;
+				engEvalString(ep, "imageFeature = imageFeature'");
+				GetMat("imageFeature", (void*)temp_imageFeature, 1, feature_col_num, ep);//~ 将MATLAB工作区中的mat_matlab矩阵赋值到c++中的mat矩阵，覆盖掉原先mat矩阵的值
+				memcpy(imageFeature.data, temp_imageFeature, 1 * feature_col_num * sizeof(double));//~ 将double类型的mat矩阵数组转成cv::Mat类型，存储到Mat A(M, M, CV_64FC1)中
+				imageFeature.convertTo(imageFeature, CV_32FC1);//~ 将64位存储类型的A矩阵转成32位（float）类型
+				train_feature.push_back(imageFeature);//~ push_back是按行加在mat矩阵最后一行
+			}
+
+			packetNum_disGesture++;
+			ui.disGesture_progressBar_1->setValue(packetNum_disGesture + 1);
+
+			int step = packetNum_disGesture % (frameRate * holdTime_disGesture * classNum_disGesture);
+			int temp = frameRate * holdTime_disGesture;
+
+			if ((step >= 0) && (step < temp))
+			{
+				if (step == 1)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[9]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[0]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+
+				if (step > temp - frameRate)
+				{
+					imageShowLabel_disGesture[1]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= temp) && (step < 2 * temp))
+			{
+				if (step == temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[0]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[1]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 2 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[2]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 2 * temp) && (step < 3 * temp))
+			{
+				if (step == 2 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[1]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[2]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 3 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[3]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 3 * temp) && (step < 4 * temp))
+			{
+				if (step == 3 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[2]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[3]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 4 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[4]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 4 * temp) && (step < 5 * temp))
+			{
+				if (step == 4 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[3]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[4]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 5 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[5]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 5 * temp) && (step < 6 * temp))
+			{
+				if (step == 5 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[4]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[5]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 6 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[6]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 6 * temp) && (step < 7 * temp))
+			{
+				if (step == 6 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[5]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[6]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 7 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[7]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 7 * temp) && (step < 8 * temp))
+			{
+				if (step == 7 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[6]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[7]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 8 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[8]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 8 * temp) && (step < 9 * temp))
+			{
+				if (step == 8 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[7]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[8]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step > 9 * temp - frameRate)
+				{
+					imageShowLabel_disGesture[9]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(0, 128, 0);");
+				}
+			}
+			else if ((step >= 9 * temp) && (step < 10 * temp))
+			{
+				if (step == 9 * temp)
+				{
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+				imageShowLabel_disGesture[8]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[9]->setStyleSheet("border-width: 5px;border-style: solid;border-color: rgb(250, 128, 10);");
+				if (step == 10 * temp - 1)
+				{
+					//~ 提示休息10s
+					ui.textBrowser->setText("Rest 10s");
+					for (auto i = 0; i != 4; ++i)
+					{
+						emgLabel[i].push_back((long long)EMG_Thread->emgBuffer->vectorArray[i].size() - 1);
+						imuLabel[i].push_back((long long)EMG_Thread->imuBuffer->vectorArray[i][0].size() - 1);
+						AmodeLabel[i].push_back(packetNum_disGesture);
+					}
+				}
+			}
+
+			if (packetNum_disGesture >= frameRate * holdTime_disGesture * trialNum_disGesture * classNum_disGesture)
+			{
+				imageShowLabel_disGesture[9]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				imageShowLabel_disGesture[0]->setStyleSheet("border-width: 0px;border-style: solid;border-color: rgb(255, 0, 0);");
+				ui.disGesture_train_button->setEnabled(true);
+
+				ui.textBrowser->setText("");
+
+				saveEMGData_disGesture();
+				saveIMUData_disGesture();
+
+				for (int i = 0; i != 4; ++i)
+				{
+					auto label_ptr = &AmodeLabel[i];
+					if (!qfSaveAmodeLabelFile[i].open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text))
+					{
+						QMessageBox::warning(this, tr("Error"), tr("Open failed"));
+						return;
+					}
+					QTextStream out_label(&qfSaveAmodeLabelFile[i]);
+					for (auto it = label_ptr->begin(); it != label_ptr->end(); ++it)
+					{
+						out_label << *it << endl;
+					}
+					qfSaveAmodeLabelFile[i].close();
+
+					qfSaveAmodeFile[i].close();
+					qfSaveAmodeTimeFile[i].close();
+				}
+				
+
+				myPlayer->threadFree();
+				ui.disGesture_predict_button->setEnabled(true);
+				QObject::disconnect(wifi_Thread->wifi_tcpClient, SIGNAL(readyRead()), this, SLOT(getTrainFeature_disGesture_A_trigger()));
+			}
+			else if (step == 0)
+			{
+				_sleep(10000);
+				ui.textBrowser->setText("");
+			}
+		}
+	}
 }

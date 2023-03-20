@@ -8,6 +8,10 @@
 #include <fstream>
 #include<time.h>
 
+#include <QTimer>
+#include <QDateTime>
+#include <QDebug>
+
 // 管理设备使用状态的子线程
 // 根据不同状态执行不同阶段的程序
 class Player : public QThread

@@ -6,9 +6,12 @@
 
 #define CIRCLE_SIZE 50
 #define EMG_QUEUE_SIZE 50
+//#define EMG_QUEUE_SIZE 25
 #define IMU_QUEUE_SIZE 10
-#define EMG_SEND_PACKAGE_SIZE 67
-#define BUFFER_SIZE 6700
+//#define EMG_SEND_PACKAGE_SIZE 67
+#define EMG_SEND_PACKAGE_SIZE 107
+//#define BUFFER_SIZE 6700
+#define BUFFER_SIZE 10700
 
 using namespace std;
 
@@ -65,7 +68,9 @@ UnionIMUBuffer::UnionIMUBuffer(int channelSize, int dataSize, int bufferSize)
 	{
 		Data_x.push_back(i);
 	}
+	calculator = new IMU_Calculator();
 }
+
 void UnionIMUBuffer::saveData(const int& channel, const int& dataNum, double data)
 {
 	array[channel][dataNum].push(data);
@@ -73,6 +78,21 @@ void UnionIMUBuffer::saveData(const int& channel, const int& dataNum, double dat
 	deArray[channel][dataNum].push_back(data);
 	deArray[channel][dataNum].pop_front();
 }
+
+void UnionIMUBuffer::saveData(const int& channel, IMU_data& data)
+{
+	calculator->push(data);
+	vector<double> arr(3);
+	arr[0] = data.accx, arr[1] = data.accy, arr[2] = data.accz;
+	for (int i = 0; i < 3; ++i)
+	{
+		array[channel][i].push(arr[i]);
+		vectorArray[channel][i].push_back(arr[i]);
+		deArray[channel][i].push_back(arr[i]);
+		deArray[channel][i].pop_front();
+	}
+}
+
 EMGProcesser::EMGProcesser(QSerialPort* serialPort, QObject* parent) : QThread(parent)
 {
 	EMGSerialPort = new QSerialPort();
@@ -82,6 +102,8 @@ EMGProcesser::EMGProcesser(QSerialPort* serialPort, QObject* parent) : QThread(p
 	dataLength = 8;
 	emgBuffer = new EMGBuffer(4, 10000);
 	imuBuffer = new UnionIMUBuffer(4, 3, 1000);
+	iir_filter_array.resize(4);
+	comb_filter_array.resize(4);
 }
 EMGProcesser::~EMGProcesser()
 {
@@ -231,10 +253,13 @@ void EMGProcesser::dataBufferUnpackage()
 		}
 	}
 }
+
 void EMGProcesser::run()
 {
 	//qDebug() << "run" << endl;
-	QObject::connect(EMGSerialPort, SIGNAL(readyRead()), this, SLOT(onReadyProcessing()));
+	// 8bit EMG
+	//QObject::connect(EMGSerialPort, SIGNAL(readyRead()), this, SLOT(onReadyProcessing()));
+	QObject::connect(EMGSerialPort, SIGNAL(readyRead()), this, SLOT(onReadyProcessing_16bit()));
 	stopFlag = false;
 	while (!stopFlag)
 	{
@@ -252,6 +277,7 @@ void EMGProcesser::onReadyProcessing()
 	uint8_t IMUPackageNum = 0;
 	unsigned char rollHigh = 0, rollLow = 0, pitchHigh = 0, pitchLow = 0, yawHigh = 0, yawLow = 0;
 	float tempRoll = 0, tempPitch = 0, tempYaw = 0;
+	int16_t tempAccx = 0, tempAccy = 0, tempAccz = 0;
 	//disconnect(EMGSerialPort, SIGNAL(readyRead()), this, SLOT(onReadyProcessing()));
 	//while (EMGSerialPort->waitForReadyRead(10) == true);
 	//connect(EMGSerialPort, SIGNAL(readyRead()), this, SLOT(onReadyProcessing()));
@@ -292,7 +318,9 @@ void EMGProcesser::onReadyProcessing()
 							//emgBuffer->array[emgChannel].push(double(tempEMG));
 							////qDebug() << double(tempEMG) << endl;
 							//emgBuffer->vectorArray[emgChannel].push_back(double(tempEMG));
-							emgBuffer->saveData(emgChannel, double(tempEMG));
+							double result = tempEMG;
+							//EMG_COMB_Filter(&comb_filter_array[emgChannel], (double)tempEMG, result);
+							emgBuffer->saveData(emgChannel, result);
 						}
 						emgBuffer->packageNumArray.push_back(EMGPackageNum);
 					}
@@ -309,19 +337,31 @@ void EMGProcesser::onReadyProcessing()
 						{
 							rollHigh = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 3];
 							rollLow = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 4];
-							tempRoll = float(int16_t((rollHigh << 8) | rollLow)) / 100;
+							//tempRoll = float(int16_t((rollHigh << 8) | rollLow)) / 100;
 							//imuBuffer->array[imuChannel][0].push(double(tempRoll));
-							imuBuffer->saveData(imuChannel, 0, tempRoll);
+							//imuBuffer->saveData(imuChannel, 0, tempRoll);
+
+							tempAccx = (int16_t)(rollHigh << 8) | rollLow;
+
 							pitchHigh = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 23];
 							pitchLow = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 24];
-							tempPitch = float(int16_t((pitchHigh << 8)) | pitchLow) / 100;
+							//tempPitch = float(int16_t((pitchHigh << 8) | pitchLow)) / 100;
 							//imuBuffer->array[imuChannel][1].push(double(tempPitch));
-							imuBuffer->saveData(imuChannel, 1, tempPitch);
+							//imuBuffer->saveData(imuChannel, 1, tempPitch);
+
+							tempAccy = (int16_t)(pitchHigh << 8) | pitchLow;
+
 							yawHigh = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 43];
 							yawLow = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 44];
-							tempYaw = float(int16_t((yawHigh << 8)) | yawLow) / 100;
+							//tempYaw = float(int16_t((yawHigh << 8) | yawLow)) / 100;
 							//imuBuffer->array[imuChannel][2].push(double(tempYaw));
-							imuBuffer->saveData(imuChannel, 2, tempYaw);
+							//imuBuffer->saveData(imuChannel, 2, tempYaw);
+
+							tempAccz = (int16_t)(yawHigh << 8) | yawLow;
+
+							IMU_data tmp_data = IMU_data(tempAccx, tempAccy, tempAccz);
+							imuBuffer->calculator->push(tmp_data);
+							imuBuffer->saveData(imuChannel, tmp_data);
 						}
 						imuBuffer->packageNumArray.push_back(IMUPackageNum);
 					}
@@ -402,7 +442,10 @@ void EMGProcesser::onReadyProcessing()
 								tempEMG = int16_t(tempEMG | 0xF000);
 							//emgBuffer->array[emgChannel].push(double(tempEMG));
 							//emgBuffer->vectorArray[emgChannel].push_back(double(tempEMG));
-							emgBuffer->saveData(emgChannel, double(tempEMG));
+							double result = tempEMG;
+							//EMG_COMB_Filter(&comb_filter_array[emgChannel], (double)tempEMG, result);
+							emgBuffer->saveData(emgChannel, result);
+							//emgBuffer->saveData(emgChannel, double(tempEMG));
 						}
 						emgBuffer->packageNumArray.push_back(EMGPackageNum);
 					}
@@ -419,19 +462,31 @@ void EMGProcesser::onReadyProcessing()
 						{
 							rollHigh = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 3) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
 							rollLow = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 4) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
-							tempRoll = float(int16_t((rollHigh << 8) | rollLow)) / 100;
+							//tempRoll = float(int16_t((rollHigh << 8) | rollLow)) / 100;
 							//imuBuffer->array[imuChannel][0].push(double(tempRoll));
-							imuBuffer->saveData(imuChannel, 0, tempRoll);
+							//imuBuffer->saveData(imuChannel, 0, tempRoll);
+
+							tempAccx = (int16_t)(rollHigh << 8) | rollLow;
+
 							pitchHigh = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 23) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
 							pitchLow = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 24) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
-							tempPitch = float(int16_t((pitchHigh << 8) | pitchLow)) / 100;
+							//tempPitch = float(int16_t((pitchHigh << 8) | pitchLow)) / 100;
 							//imuBuffer->array[imuChannel][1].push(double(tempPitch));
-							imuBuffer->saveData(imuChannel, 1, tempPitch);
+							//imuBuffer->saveData(imuChannel, 1, tempPitch);
+
+							tempAccy = (int16_t)(pitchHigh << 8) | pitchLow;
+
 							yawHigh = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 43) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
 							yawLow = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 44) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
-							tempYaw = float(int16_t((yawHigh << 8) | yawLow)) / 100;
+							//tempYaw = float(int16_t((yawHigh << 8) | yawLow)) / 100;
 							//imuBuffer->array[imuChannel][2].push(double(tempYaw));
-							imuBuffer->saveData(imuChannel, 2, tempYaw);
+							//imuBuffer->saveData(imuChannel, 2, tempYaw);
+
+							tempAccz = (int16_t)(yawHigh << 8) | yawLow;
+
+							IMU_data tmp_data = IMU_data(tempAccx, tempAccy, tempAccz);
+							imuBuffer->calculator->push(tmp_data);
+							imuBuffer->saveData(imuChannel, tmp_data);
 						}
 						imuBuffer->packageNumArray.push_back(IMUPackageNum);
 					}
@@ -512,6 +567,187 @@ void EMGProcesser::onReadyProcessing()
 	++onCount;
 
 }
+
+void EMGProcesser::onReadyProcessing_16bit()
+{
+	uint8_t emgChannel = 0, imuChannel = 0;
+	int16_t tempEMG = 0;
+	uint8_t EMGPackageNum = 0;
+	uint8_t IMUPackageNum = 0;
+	unsigned char rollHigh = 0, rollLow = 0, pitchHigh = 0, pitchLow = 0, yawHigh = 0, yawLow = 0;
+	float tempRoll = 0, tempPitch = 0, tempYaw = 0;
+	int16_t tempAccx = 0, tempAccy = 0, tempAccz = 0;
+	int emgNum = 4;
+	bool ok = 1;
+
+
+	receiveBuffer = EMGSerialPort->readAll();
+	int dataCount = receiveBuffer.size();
+	for (int i = 0; i != dataCount; ++i)
+	{
+		dataBuffer[receiveCount] = receiveBuffer.data()[i];
+		++receiveCount;
+		if (receiveCount == BUFFER_SIZE)
+			receiveCount = 0;
+		if (receiveCount >= EMG_SEND_PACKAGE_SIZE)
+		{
+			if (dataBuffer[receiveCount - 2] == 0xFF && dataBuffer[receiveCount - 3] == 0x88)
+			{
+				if (dataBuffer[receiveCount - 1] == 0x0A &&
+					dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE] == 0x0D &&
+					dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2] == 0x32)
+				{
+					emgChannel = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 1];
+					if (emgChannel < 4)
+					{
+						EMGPackageNum = uint8_t(dataBuffer[receiveCount - 4]);
+						for (int i = 0; i != EMG_QUEUE_SIZE; ++i)
+						{
+							unsigned char tmpHigh = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 3 + 2 * i];
+							unsigned char tmpLow = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 4 + 2 * i];
+							tempEMG = (tmpHigh << 8) | tmpLow;
+							double result = tempEMG;
+							//EMG_COMB_Filter(&comb_filter_array[emgChannel], (double)tempEMG, result);
+							EMG_IIR_Filter(&iir_filter_array[emgChannel], result, result);
+							emgBuffer->saveData(emgChannel, result);
+							//emgBuffer->saveData(emgChannel, double(tempEMG));
+							//qDebug() << tempEMG;
+						}
+						emgBuffer->packageNumArray.push_back(EMGPackageNum);
+					}
+				}
+				else if (dataBuffer[receiveCount - 1] == 0x0E &&
+					dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE] == 0x0B &&
+					dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2] == 0x3C)
+				{
+					imuChannel = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 1];
+					if (imuChannel <= 3)
+					{
+						IMUPackageNum = uint8_t(dataBuffer[receiveCount - 4]);
+						for (int i = 0; i != IMU_QUEUE_SIZE; ++i)
+						{
+							rollHigh = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 3];
+							rollLow = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 4];
+							//tempRoll = float(int16_t((rollHigh << 8) | rollLow)) / 100;
+							//imuBuffer->array[imuChannel][0].push(double(tempRoll));
+							//imuBuffer->saveData(imuChannel, 0, tempRoll);
+
+							tempAccx = (int16_t)(rollHigh << 8) | rollLow;
+
+							pitchHigh = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 23];
+							pitchLow = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 24];
+							//tempPitch = float(int16_t((pitchHigh << 8)) | pitchLow) / 100;
+							//imuBuffer->array[imuChannel][1].push(double(tempPitch));
+							//imuBuffer->saveData(imuChannel, 1, tempPitch);
+
+
+							tempAccy = (int16_t)(pitchHigh << 8) | pitchLow;
+
+							yawHigh = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 43];
+							yawLow = dataBuffer[receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 44];
+							//tempYaw = float(int16_t((yawHigh << 8) | yawLow)) / 100;
+							//imuBuffer->array[imuChannel][2].push(double(tempYaw));
+							//imuBuffer->saveData(imuChannel, 2, tempYaw);
+
+							tempAccz = (int16_t)(yawHigh << 8) | yawLow;
+
+							IMU_data tmp_data = IMU_data(tempAccx, tempAccy, tempAccz);
+							imuBuffer->calculator->push(tmp_data);
+							imuBuffer->saveData(imuChannel, tmp_data);
+						}
+						imuBuffer->packageNumArray.push_back(IMUPackageNum);
+					}
+				}
+			}
+		}
+		else
+		{
+			if (((receiveCount - 2) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE == 0xFF
+				&& ((receiveCount - 3) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE == 0x88)
+			{
+				if (dataBuffer[((receiveCount - 1) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE] == 0x0A &&
+					dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE] == 0x0D &&
+					dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE] == 0x32)
+				{
+					emgChannel = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 1) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+					if (emgChannel < 4)
+					{
+						EMGPackageNum = dataBuffer[((receiveCount - 4) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+						for (int i = 0; i != EMG_QUEUE_SIZE; ++i)
+						{
+							unsigned char tmpHigh = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 3 + 2 * i) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							unsigned char tmpLow = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 4 + 2 * i) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							tempEMG = (tmpHigh << 8) | tmpLow;
+							double result = tempEMG;
+							//EMG_COMB_Filter(&comb_filter_array[emgChannel], (double)tempEMG, result);
+							EMG_IIR_Filter(&iir_filter_array[emgChannel], result, result);
+							emgBuffer->saveData(emgChannel, result);
+							//emgBuffer->saveData(emgChannel, double(tempEMG));
+							//qDebug() << tempEMG;
+						}
+						emgBuffer->packageNumArray.push_back(EMGPackageNum);
+					}
+				}
+				else if (dataBuffer[((receiveCount - 1) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE] == 0x0E &&
+					dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE] == 0x0B &&
+					dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE] == 0x3C)
+				{
+					imuChannel = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 1) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+					if (imuChannel <= 3)
+					{
+						IMUPackageNum = dataBuffer[((receiveCount - 4) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+						for (int i = 0; i != IMU_QUEUE_SIZE; ++i)
+						{
+							rollHigh = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 3) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							rollLow = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 4) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							//tempRoll = float(int16_t((rollHigh << 8) | rollLow)) / 100;
+							//imuBuffer->array[imuChannel][0].push(double(tempRoll));
+							//imuBuffer->saveData(imuChannel, 0, tempRoll);
+
+							tempAccx = (int16_t)(rollHigh << 8) | rollLow;
+
+							pitchHigh = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 23) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							pitchLow = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 24) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							//tempPitch = float(int16_t((pitchHigh << 8) | pitchLow)) / 100;
+							//imuBuffer->array[imuChannel][1].push(double(tempPitch));
+							//imuBuffer->saveData(imuChannel, 1, tempPitch);
+
+							tempAccy = (int16_t)(pitchHigh << 8) | pitchLow;
+
+							yawHigh = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 43) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							yawLow = dataBuffer[((receiveCount - EMG_SEND_PACKAGE_SIZE + 2 * i + 44) % BUFFER_SIZE + BUFFER_SIZE) % BUFFER_SIZE];
+							//tempYaw = float(int16_t((yawHigh << 8) | yawLow)) / 100;
+							//imuBuffer->array[imuChannel][2].push(double(tempYaw));
+							//imuBuffer->saveData(imuChannel, 2, tempYaw);
+
+							tempAccz = (int16_t)(yawHigh << 8) | yawLow;
+
+							IMU_data tmp_data = IMU_data(tempAccx, tempAccy, tempAccz);
+							imuBuffer->calculator->push(tmp_data);
+							imuBuffer->saveData(imuChannel, tmp_data);
+						}
+						imuBuffer->packageNumArray.push_back(IMUPackageNum);
+					}
+
+				}
+			}
+		}
+	}
+	QByteArray tempHexBuffer = receiveBuffer.toHex();
+	EMGSerialPortBuffer.clear();
+	for (int i = 0; i < tempHexBuffer.length(); i += 2)
+	{
+		EMGSerialPortBuffer += tempHexBuffer.mid(i, 2).toInt(&ok, 16);
+	}
+	if (onCount > 10)
+	{
+		updateEMGSignal();
+		onCount = 0;
+	}
+	++onCount;
+
+}
+
 void EMGProcesser::stopThread()
 {
 	stopFlag = true;

@@ -1,6 +1,8 @@
 #ifndef EMGPROCESSER_H
 #define EMGPROCESSER_H
 
+#include "IMU_Calculator.h"
+#include "Filter.h"
 #include <QThread>
 #include <QSerialPort>
 #include <QVector>
@@ -35,6 +37,8 @@ public:
 	std::vector<uint8_t> packageNumArray;
 	QVector<double> Data_x;
 	void saveData(const int& channel, const int& dataNum, double data);
+	void saveData(const int& channel, IMU_data& data);
+	IMU_Calculator* calculator;
 };
 class EMGProcesser : public QThread
 {
@@ -44,6 +48,8 @@ private:
 	int channelCount;
 	bool stopFlag;
 	int dataLength;
+	std::vector<EMG_IIR_FILER> iir_filter_array;
+	std::vector<EMG_COMB_FILER> comb_filter_array;
 
 protected:
 	void run();
@@ -63,6 +69,7 @@ signals:
 	void updateEMGSignal();
 public slots:
 	void onReadyProcessing();
+	void onReadyProcessing_16bit();
 
 };
 
